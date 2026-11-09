@@ -39,9 +39,10 @@ export class VirtualRoom {
     this.scene.fog = new THREE.Fog('#c9d6e2', 10, 22);
 
     this.camera = new THREE.PerspectiveCamera(58, 9 / 16, 0.1, 40);
-    // Sit on the sofa side, looking at the big back window (−Z).
-    this.camera.position.set(0, 1.45, 2.35);
-    this.camera.lookAt(0, 1.55, -3.2);
+    // Selfie hold: real window is often *behind* the user. Match that —
+    // stand near the window wall, look into the room (+Z); window stays at −Z behind.
+    this.camera.position.set(0, 1.5, -2.15);
+    this.camera.lookAt(0, 1.35, 1.8);
     this.restPosition.copy(this.camera.position);
     this.restQuaternion.copy(this.camera.quaternion);
     // Lock "phone upright selfie" rest pose to this forward room view.

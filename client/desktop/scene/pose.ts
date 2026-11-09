@@ -3,7 +3,7 @@ import { mapArkitPosition, mapArkitQuat } from '../../shared/arkitMap';
 
 /**
  * ARKit camera space → Three.js camera space (both Y-up, right-handed).
- * Relative deltas use (dx, dy, -dz). Face anchor pose must NEVER feed this class.
+ * Selfie map is passthrough (dx, dy, dz); room rest has window behind. Face anchor ≠ pose.
  */
 export function arkitPositionToThree(px: number, py: number, pz: number, out: THREE.Vector3): THREE.Vector3 {
   const [x, y, z] = mapArkitPosition(px, py, pz);

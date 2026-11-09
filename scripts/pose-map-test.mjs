@@ -2,10 +2,10 @@
 /** Pure mapping tests — no browser / no phone. */
 
 function mapArkitPosition(px, py, pz) {
-  return [px, py, -pz];
+  return [px, py, pz];
 }
 function mapArkitQuat(qx, qy, qz, qw) {
-  return [qx, qy, -qz, qw];
+  return [qx, qy, qz, qw];
 }
 
 let failed = 0;
@@ -19,16 +19,16 @@ function assert(cond, msg) {
 }
 
 const p = mapArkitPosition(0.1, 0.2, 0.3);
-assert(p[0] === 0.1 && p[1] === 0.2 && p[2] === -0.3, 'position Z flip');
+assert(p[0] === 0.1 && p[1] === 0.2 && p[2] === 0.3, 'position passthrough (selfie Z)');
 
 const q = mapArkitQuat(0.1, 0.2, 0.3, 0.9);
-assert(q[0] === 0.1 && q[1] === 0.2 && q[2] === -0.3 && q[3] === 0.9, 'quat Z flip');
+assert(q[0] === 0.1 && q[1] === 0.2 && q[2] === 0.3 && q[3] === 0.9, 'quat passthrough');
 
-// Relative forward: phone moves +Z in ARKit → Three -Z into room
+// Phone moves +Z in ARKit → Three +Z (toward sofa / into room when window is behind)
 const a = mapArkitPosition(0, 0, 0);
 const b = mapArkitPosition(0, 0, 0.5);
 const dz = b[2] - a[2];
-assert(dz === -0.5, 'forward phone motion maps to -Z in Three');
+assert(dz === 0.5, 'forward phone motion maps to +Z in Three (into room)');
 
 if (failed) {
   console.error(`${failed} failed`);

@@ -35,17 +35,16 @@
 **Why:** Native 6DoF needs position + quat; TEST 02–04 must not regress.  
 **Result:** Receiver branches on payload type; 3DoF OrientationTracker remains default.
 
-## 2026-11-09 — ARKit→Three axis map `(x,y,-z)`
+## 2026-11-09 — ARKit→Three axis map (selfie)
 
-**Decision:** Map relative ARKit camera translation/rotation with Z flip into VirtualRoom.  
-**Why:** Align phone forward motion with room look-into (-Z).  
-**Note:** Final validation requires hardware; map may be tuned after Phase 5.
+**Decision (updated):** Passthrough `(x,y,z)` + rest camera faces *into* room with window *behind*.  
+**Why:** Hardware: user window behind them; with `(x,y,-z)` + looking at window, walk forward moved away from window while feeling inverted vs body.  
+**Prev:** `(x,y,-z)` assumed rear-cam / look-into-window framing.
 
 ## 2026-11-09 — 6DoF position in baseline-local frame
 
 **Decision:** Apply phone translation as baseline-local delta, then rotate into room rest camera — not raw world-axis add.  
-**Why:** Native test: walking back toward a real window felt like moving away from the virtual window (axes unaligned).  
-**Keep:** `(x,y,-z)` map; only change how delta is applied.
+**Why:** Native test: walking back drifted on unaligned world axes.
 
 ## 2026-11-09 — No local Mac: native iOS via rented Cloud Mac (not Expo-only)
 
