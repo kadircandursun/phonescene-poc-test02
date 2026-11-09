@@ -1,10 +1,11 @@
 import Foundation
 import CoreGraphics
+import AVFoundation
+import simd
 
 #if canImport(ARKit)
 import ARKit
 #endif
-
 
 /// Captures front-camera frames + camera transform when world tracking is supported.
 /// IMPORTANT: Face anchor pose ≠ phone world pose. Use frame.camera.transform only.
@@ -25,6 +26,38 @@ final class ARSessionManager: NSObject {
     #endif
 
     func start() {
+        requestCameraAccess { [weak self] granted in
+            guard let self else { return }
+            guard granted else {
+                self.onStatus?("Kamera izni reddedildi — Ayarlar → Mervelere → Kamera")
+                return
+            }
+            self.startARSession()
+        }
+    }
+
+    func stop() {
+        #if canImport(ARKit)
+        session.pause()
+        #endif
+    }
+
+    private func requestCameraAccess(completion: @escaping (Bool) -> Void) {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            completion(true)
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                DispatchQueue.main.async { completion(granted) }
+            }
+        case .denied, .restricted:
+            completion(false)
+        @unknown default:
+            completion(false)
+        }
+    }
+
+    private func startARSession() {
         #if canImport(ARKit)
         guard ARFaceTrackingConfiguration.isSupported else {
             onStatus?("ARFaceTrackingConfiguration unsupported — use 3DoF fallback")
@@ -43,12 +76,6 @@ final class ARSessionManager: NSObject {
         session.run(config, options: [.resetTracking, .removeExistingAnchors])
         #else
         onStatus?("ARKit unavailable on this host")
-        #endif
-    }
-
-    func stop() {
-        #if canImport(ARKit)
-        session.pause()
         #endif
     }
 }
@@ -76,6 +103,18 @@ extension ARSessionManager: ARSessionDelegate {
                 intrinsics: frame.camera.intrinsics
             )
         )
+    }
+
+    func session(_ session: ARSession, didFailWithError error: Error) {
+        onStatus?("ARSession failed: \(error.localizedDescription)")
+    }
+
+    func sessionWasInterrupted(_ session: ARSession) {
+        onStatus?("ARSession interrupted")
+    }
+
+    func sessionInterruptionEnded(_ session: ARSession) {
+        onStatus?("ARSession interruption ended")
     }
 }
 #endif

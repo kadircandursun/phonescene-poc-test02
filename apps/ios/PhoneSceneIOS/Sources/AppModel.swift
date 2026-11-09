@@ -69,6 +69,7 @@ final class AppModel: ObservableObject {
 
     func startSession() {
         refreshCapabilities()
+        statusText = "Kamera izni isteniyor…"
         ar.start()
         sessionRunning = true
     }
