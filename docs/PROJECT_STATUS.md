@@ -1,25 +1,25 @@
 # PROJECT_STATUS
 
 **Updated:** 2026-11-09  
-**Current phase:** Native WebRTC build **4** (TestFlight) · **Mervelere**
+**Current phase:** TestFlight build **4** uploaded · native WebRTC LAN test · **Mervelere**
 
 ## Completed
 
-- TEST 01–04 web PoC + Companion
-- ARKit 6DoF device evidence PASS (build 3)
-- Native WebRTC source: stasel SPM + AR video + pose DataChannel
+- ARKit 6DoF device PASS (build 3)
+- Native WebRTC (AR video + pose DC) CI PASS  
+  https://github.com/kadircandursun/phonescene-poc-test02/actions/runs/42637222861
 
 ## In progress / blocked
 
-- TestFlight build 4 upload / device WebRTC LAN test — **NOT TESTED**
+- Device LAN WebRTC (video + pose → Companion) — **NOT TESTED**
 
 ## Next action (kullanıcı)
 
-1. TestFlight **1.0.2 (4)** güncelle  
-2. PC: `npm run companion` → Receiver → pair kodu  
-3. iPhone: host IP + kod → Start AR → **Connect PC**  
-4. Receiver’da video + poseHz / oda hareketi bildir  
+1. TestFlight → **1.0.2 (4)** güncelle  
+2. PC aynı Wi‑Fi: `npm run companion` → Receiver → pair kodu kopyala  
+3. iPhone: Companion’daki LAN IP + `8787` + kod → Start AR → **Connect PC**  
+4. Receiver’da video + oda hareketi / poseHz bildir  
 
 ## User actions required
 
-- Aynı Wi‑Fi; Companion’daki LAN IP’yi telefona yaz
+- Build 4 kur + LAN WebRTC sonucu

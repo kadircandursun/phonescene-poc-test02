@@ -63,5 +63,6 @@
 ## Native LAN WebRTC
 
 - Implementation (build 4+): stasel WebRTC SPM + ARFrame video + `pose` on `sensors` DC
-- CI / device LAN path: **NOT TESTED** (await TestFlight build 4 + same Wi‑Fi)
+- CI upload build 4 (run `42637222861`): **PASS**
+- Device LAN WebRTC (video + pose → Companion): **NOT TESTED** (await user)
 
