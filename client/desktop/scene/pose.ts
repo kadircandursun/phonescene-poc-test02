@@ -102,6 +102,9 @@ export class SixDofTracker {
 
   /**
    * Writes camera world position/quaternion relative to room rest pose.
+   * Position delta is expressed in the phone's baseline-local frame, then
+   * re-applied in the room rest frame — otherwise walking "back" drifts on
+   * world axes and feels detached from the virtual window.
    * Returns false if 6DoF should not drive the camera (caller keeps 3DoF).
    */
   applyToCamera(
@@ -113,7 +116,12 @@ export class SixDofTracker {
     if (!this.hasSample || !this.hasBaseline) return false;
     if (this.lost && performance.now() - this.lastGoodAt > this.lostHoldMs) return false;
 
-    this.relativePos.copy(this.currentPos).sub(this.baselinePos).multiplyScalar(this.positionScale);
+    // World delta (mapped ARKit → Three) → baseline-local → rest-camera world.
+    this.scratchPos.copy(this.currentPos).sub(this.baselinePos);
+    this.scratchPos.applyQuaternion(this.baselineQuatInv);
+    this.scratchPos.multiplyScalar(this.positionScale);
+    this.relativePos.copy(this.scratchPos).applyQuaternion(restQuaternion);
+
     this.relativeQuat.copy(this.baselineQuatInv).multiply(this.currentQuat);
 
     this.smoothedPos.lerp(this.relativePos, this.slerpFactor);

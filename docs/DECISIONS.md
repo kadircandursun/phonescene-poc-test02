@@ -41,6 +41,12 @@
 **Why:** Align phone forward motion with room look-into (-Z).  
 **Note:** Final validation requires hardware; map may be tuned after Phase 5.
 
+## 2026-11-09 — 6DoF position in baseline-local frame
+
+**Decision:** Apply phone translation as baseline-local delta, then rotate into room rest camera — not raw world-axis add.  
+**Why:** Native test: walking back toward a real window felt like moving away from the virtual window (axes unaligned).  
+**Keep:** `(x,y,-z)` map; only change how delta is applied.
+
 ## 2026-11-09 — No local Mac: native iOS via rented Cloud Mac (not Expo-only)
 
 **Decision:** Keep Swift/ARKit as the real native path. Without buying a Mac, use short-term **Cloud Mac + Xcode** (or CI for compile-only).  
