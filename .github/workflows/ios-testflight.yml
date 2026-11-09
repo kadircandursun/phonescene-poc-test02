@@ -93,6 +93,8 @@ jobs:
           p.write_text(text)
           PY
           xcodegen generate
+          # Fail CI if privacy keys are missing from the generated project Info.plist source.
+          /usr/libexec/PlistBuddy -c 'Print :NSCameraUsageDescription' PhoneSceneIOS/Info.plist >/dev/null
 
       - name: Build archive
         env:
@@ -112,7 +114,11 @@ jobs:
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution" \
             PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            GENERATE_INFOPLIST_FILE=NO \
+            INFOPLIST_FILE=PhoneSceneIOS/Info.plist \
             archive
+          /usr/libexec/PlistBuddy -c 'Print :NSCameraUsageDescription' \
+            build/PhoneSceneIOS.xcarchive/Products/Applications/Mervelere.app/Info.plist
 
       - name: Export IPA
         env:
@@ -126,6 +132,11 @@ jobs:
             -exportPath build/export \
             -exportOptionsPlist ExportOptions-AppStore.plist
           ls -lh build/export
+          IPA=$(ls build/export/*.ipa | head -1)
+          TMP=$(mktemp -d)
+          unzip -q "$IPA" -d "$TMP"
+          /usr/libexec/PlistBuddy -c 'Print :NSCameraUsageDescription' "$TMP"/Payload/*.app/Info.plist
+          echo "IPA Info.plist camera usage OK"
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4

@@ -5,6 +5,12 @@
 - No Rust → Tauri Windows app binary blocked
 - No macOS/Xcode → iOS build/device tests blocked
 
+## P1 — TestFlight build 1 crash on Start AR (fixed in build 2)
+
+- Symptom: Start AR → no camera prompt → app killed
+- Cause: shipped IPA Info.plist lacked `NSCameraUsageDescription` (`GENERATE_INFOPLIST_FILE` not forced `NO`)
+- Fix: explicit Info.plist + CI PlistBuddy gate + AVCapture permission request
+
 ## P2 — Web mobile networking
 
 - Safari camera still needs HTTPS secure context (tunnel) for web sender

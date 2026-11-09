@@ -1,26 +1,25 @@
 # PROJECT_STATUS
 
 **Updated:** 2026-11-09  
-**Current phase:** TestFlight device install PASS · Start AR bekleniyor · **Mervelere**
+**Current phase:** Start AR crash fix → TestFlight build 2 · **Mervelere**
 
 ## Completed
 
 - TEST 01–04 web PoC + Companion
-- ASC app **Mervelere** (`com.mervelere.app`) + signing secrets
-- **iOS TestFlight CI PASS** — archive + export + ASC upload  
-  https://github.com/kadircandursun/phonescene-poc-test02/actions/runs/42630713672
-- **TestFlight iPhone kurulumu PASS** (kullanıcı bildirimi, 2026-11-09)
+- TestFlight CI + device install PASS (build 1)
+- Root cause: IPA Info.plist missing `NSCameraUsageDescription`
 
 ## In progress / blocked
 
-- Start AR / ARKit cihaz kanıtı — **NOT TESTED**
+- Build 2: Info.plist privacy keys + camera permission request → re-upload
+- Start AR / ARKit cihaz kanıtı — **FAIL on build 1** (crash); retest after build 2
 
-## Next action (kullanıcı)
+## Next action
 
-1. iPhone’da **Mervelere** aç  
-2. Kamera izni ver  
-3. **Start AR** → kamera + tracking çalışıyor mu bildir  
+1. Actions **iOS TestFlight** yeşil olsun  
+2. TestFlight’ta build 2 / 1.0.1 gelsin  
+3. iPhone güncelle → Start AR → kamera izni + tracking bildir  
 
 ## User actions required
 
-- Start AR sonucu (PASS/FAIL + kısa not)
+- Build 2 görünce güncelle ve Start AR sonucu yaz
