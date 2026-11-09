@@ -43,9 +43,14 @@
 - Method: GitHub Actions unsigned IPA → Sideloadly → physical iPhone
 - Workflow: `.github/workflows/ios-sideload.yml`
 - CI build run `42623051575` (macos-latest): **PASS** (IPA artifact produced)
-- Device install / ARKit on iPhone: **NOT TESTED** (await Sideloadly by user)
-- Note: free Apple ID ~7-day expiry; `macos-14` label cancelled on this account — use `macos-latest`
+- Device install / ARKit on iPhone: **NOT TESTED** (kablo yok; TestFlight tercih)
 
+## iOS TestFlight (signed)
+
+- App: **Mervelere** (`com.mervelere.app`)
+- Workflow: `.github/workflows/ios-testflight.yml`
+- CI run `42630713672`: **PASS** (archive + IPA + ASC upload + artifact)
+- TestFlight device install / ARKit: **NOT TESTED** (await user)
 
 ## Native LAN WebRTC
 
