@@ -10,7 +10,8 @@
     "companion": "node scripts/start-companion.mjs",
     "tunnel": "powershell -ExecutionPolicy Bypass -File scripts/start-tunnel.ps1",
     "smoke": "node scripts/smoke-test.mjs",
-    "check": "tsc --noEmit && vite build"
+    "test:pose": "node scripts/pose-map-test.mjs",
+    "check": "tsc --noEmit && vite build && npm run test:pose"
   },
   "engines": {
     "node": ">=20"

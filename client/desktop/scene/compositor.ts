@@ -114,6 +114,7 @@ export class SceneCompositor {
   setTracking(enabled: boolean) {
     this.trackingEnabled = enabled;
     this.room.orientation.trackingEnabled = enabled;
+    this.room.preferSixDof = enabled;
   }
 
   setOutputProfile(profile: OutputProfile) {
@@ -122,11 +123,10 @@ export class SceneCompositor {
   }
 
   recenter() {
-    this.room.orientation.recenter();
+    this.room.recenter();
   }
 
-  pushSensors(alpha: number | null, beta: number | null, gamma: number | null) {
-    this.room.orientation.updateFromSensors(alpha, beta, gamma);
+  private bumpPoseHz() {
     this.poseUpdates += 1;
     const elapsed = performance.now() - this.poseWindowStart;
     if (elapsed >= 1000) {
@@ -134,6 +134,44 @@ export class SceneCompositor {
       this.poseUpdates = 0;
       this.poseWindowStart = performance.now();
     }
+  }
+
+  pushSensors(alpha: number | null, beta: number | null, gamma: number | null) {
+    this.room.orientation.updateFromSensors(alpha, beta, gamma);
+    this.bumpPoseHz();
+  }
+
+  pushPose(payload: {
+    mode: '6dof' | '3dof';
+    px?: number | null;
+    py?: number | null;
+    pz?: number | null;
+    qx: number;
+    qy: number;
+    qz: number;
+    qw: number;
+    trackingState?: string;
+    alpha?: number | null;
+    beta?: number | null;
+    gamma?: number | null;
+    fovY?: number | null;
+  }) {
+    if (payload.mode === '6dof' && payload.px != null && payload.py != null && payload.pz != null) {
+      this.room.pushSixDof({
+        px: payload.px,
+        py: payload.py,
+        pz: payload.pz,
+        qx: payload.qx,
+        qy: payload.qy,
+        qz: payload.qz,
+        qw: payload.qw,
+        trackingState: payload.trackingState,
+      });
+    } else if (payload.alpha != null || payload.beta != null || payload.gamma != null) {
+      this.room.orientation.updateFromSensors(payload.alpha ?? null, payload.beta ?? null, payload.gamma ?? null);
+    }
+    if (payload.fovY != null) this.room.setFovY(payload.fovY);
+    this.bumpPoseHz();
   }
 
   start() {

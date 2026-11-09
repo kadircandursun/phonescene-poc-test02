@@ -2,33 +2,40 @@
 
 ## PHASE 0 — Audit ✅
 
-## PHASE 1 — Windows Desktop Companion 🔄
+## PHASE 1 — Windows Desktop Companion ✅ (Tauri deferred)
 
 - [x] Network discovery API
 - [x] Status/pair API
 - [x] Companion UI
 - [x] Launcher script
+- [x] Smoke coverage
 - [ ] Tauri shell (blocked: Rust)
 - [ ] Firewall helper with explicit user consent (later)
 
-## PHASE 2 — Native iOS ARKit feasibility
+## PHASE 2 — Native iOS ARKit feasibility 🔄 (source ✅ · device BLOCKED)
 
-- [x] Swift scaffold
+- [x] Swift scaffold + capability hooks
+- [x] PoseWireEncoder / SignalingClient stubs
 - [ ] Xcode project + signing (Mac)
 - [ ] Device capability probes
 - [ ] 6DoF vs 3DoF test matrix on hardware
 
-## PHASE 3 — iOS → Windows networking
+## PHASE 3 — iOS → Windows networking 🔄 (protocol ✅ · media BLOCKED)
 
-- Reuse `/signal` + WebRTC where possible
-- Prefer LAN; tunnel optional for web only
+- [x] Document DataChannel `sensor` + `pose` (docs/PROTOCOL.md)
+- [x] Receiver accepts both payloads
+- [ ] Native WebRTC on iOS (Mac)
+- [ ] LAN discovery / QR pairing UX
+- Prefer LAN; tunnel optional for web Safari only
 
-## PHASE 4 — Windows 6DoF in Three.js
+## PHASE 4 — Windows 6DoF in Three.js 🔄 (code ✅ · hardware NOT TESTED)
 
-- Keep 3DoF path
-- Position + quaternion + recenter
+- [x] Keep 3DoF OrientationTracker path
+- [x] SixDofTracker + ARKit axis map + recenter
+- [x] Unit tests for axis mapping
+- [ ] Live iPhone 6DoF validation
 
-## PHASE 5 — E2E native sender test
+## PHASE 5 — E2E native sender test ⏳
 
 - Hardware required; cannot PASS from source alone
 

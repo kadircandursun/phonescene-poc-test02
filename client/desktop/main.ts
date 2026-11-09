@@ -1,5 +1,5 @@
 import { loadPairCode } from '../shared/session';
-import type { SensorPayload } from '../shared/types';
+import { isPosePayload, isSensorPayload, type MediaChannelPayload } from '../shared/types';
 import { $, appendDebug, renderAngles, setStatus, setText } from '../shared/ui';
 import { PhoneScenePeer, wsUrl } from '../shared/webrtc';
 import { SceneCompositor, type OutputProfile, type PreviewMode } from './scene/compositor';
@@ -134,10 +134,18 @@ function createPeer() {
     },
     onDataMessage: (raw) => {
       try {
-        const payload = JSON.parse(raw) as SensorPayload;
-        if (payload.type !== 'sensor') return;
-        renderAngles('alpha', 'beta', 'gamma', payload.alpha, payload.beta, payload.gamma);
-        compositor.pushSensors(payload.alpha, payload.beta, payload.gamma);
+        const payload = JSON.parse(raw) as MediaChannelPayload;
+        if (isSensorPayload(payload)) {
+          renderAngles('alpha', 'beta', 'gamma', payload.alpha, payload.beta, payload.gamma);
+          compositor.pushSensors(payload.alpha, payload.beta, payload.gamma);
+          return;
+        }
+        if (isPosePayload(payload)) {
+          if (payload.alpha != null || payload.beta != null || payload.gamma != null) {
+            renderAngles('alpha', 'beta', 'gamma', payload.alpha ?? null, payload.beta ?? null, payload.gamma ?? null);
+          }
+          compositor.pushPose(payload);
+        }
       } catch {
         /* ignore */
       }

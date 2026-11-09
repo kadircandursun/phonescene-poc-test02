@@ -1,19 +1,27 @@
 import * as THREE from 'three';
 import { OrientationTracker } from './orientation';
+import { SixDofTracker, type SixDofSample } from './pose';
 
 export type SceneId = 'loft' | 'studio';
 
 /**
- * Procedural indoor room. Camera sits inside; only rotation changes (3DoF).
+ * Procedural indoor room.
+ * Default: 3DoF rotation (TEST 03–04). Optional 6DoF position when pose samples arrive.
  */
 export class VirtualRoom {
   readonly renderer: THREE.WebGLRenderer;
   readonly scene: THREE.Scene;
   readonly camera: THREE.PerspectiveCamera;
   readonly orientation = new OrientationTracker();
+  readonly sixDof = new SixDofTracker();
   private readonly camQuat = new THREE.Quaternion();
+  private readonly camPos = new THREE.Vector3();
+  private readonly restPosition = new THREE.Vector3();
+  private readonly restQuaternion = new THREE.Quaternion();
   private roomRoot: THREE.Group | null = null;
   private sceneId: SceneId = 'loft';
+  /** When true and 6DoF samples exist, position+rotation from SixDofTracker. */
+  preferSixDof = true;
 
   constructor(canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({
@@ -33,8 +41,10 @@ export class VirtualRoom {
     this.camera = new THREE.PerspectiveCamera(60, 9 / 16, 0.1, 40);
     this.camera.position.set(0, 1.55, 2.2);
     this.camera.lookAt(0, 1.35, -1);
+    this.restPosition.copy(this.camera.position);
+    this.restQuaternion.copy(this.camera.quaternion);
     // Lock "phone upright selfie" rest pose to this forward room view.
-    this.orientation.setRestQuaternion(this.camera.quaternion.clone());
+    this.orientation.setRestQuaternion(this.restQuaternion.clone());
 
     this.buildScene('loft');
   }
@@ -83,7 +93,39 @@ export class VirtualRoom {
     this.roomRoot.add(lamp);
   }
 
+  pushSixDof(sample: SixDofSample) {
+    this.sixDof.update(sample);
+  }
+
+  recenter() {
+    this.orientation.recenter();
+    this.sixDof.recenter();
+  }
+
+  setFovY(degrees: number) {
+    if (!Number.isFinite(degrees) || degrees < 20 || degrees > 120) return;
+    this.camera.fov = degrees;
+    this.camera.updateProjectionMatrix();
+  }
+
   render() {
+    if (this.preferSixDof && this.sixDof.hasPoseSample) {
+      const applied = this.sixDof.applyToCamera(
+        this.restPosition,
+        this.restQuaternion,
+        this.camPos,
+        this.camQuat,
+      );
+      if (applied) {
+        this.camera.position.copy(this.camPos);
+        this.camera.quaternion.copy(this.camQuat);
+        this.renderer.render(this.scene, this.camera);
+        return;
+      }
+    }
+
+    // 3DoF fallback — rotation only, restore rest position.
+    this.camera.position.copy(this.restPosition);
     this.orientation.getCameraQuaternion(this.camQuat);
     this.camera.quaternion.copy(this.camQuat);
     this.renderer.render(this.scene, this.camera);

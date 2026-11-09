@@ -24,9 +24,24 @@
 
 ## Companion APIs (Phase 1)
 
-- `/api/network`, `/api/status`, `/companion/` — to be validated in this session after build
-- Result: pending automation update
+- Method: automated smoke after build
+- Result: **PASS** for `/companion/`, `/api/network`, `/api/status` (this session)
+- Note: `peer-ready` may FAIL if a live browser already occupies mobile/desktop roles
+
+## Pose axis unit tests
+
+- Method: `npm run test:pose`
+- Result: **PASS** (pure mapping; no device)
+
+## Windows 6DoF plumbing
+
+- Code present in Receiver (`SixDofTracker`)
+- Hardware parallax: **NOT TESTED** (needs native pose sender)
 
 ## iOS ARKit
 
-- Result: **NOT TESTED / BLOCKED** (no Xcode)
+- Result: **NOT TESTED / BLOCKED** (no Xcode / no device)
+
+## Native LAN WebRTC
+
+- Result: **NOT TESTED / BLOCKED**

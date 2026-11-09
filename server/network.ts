@@ -25,11 +25,22 @@ function classify(name: string, address: string): NetworkAdapterInfo['kind'] {
   return 'other';
 }
 
-function scoreAdapter(kind: NetworkAdapterInfo['kind'], address: string): number {
+function scoreAdapter(kind: NetworkAdapterInfo['kind'], address: string, name: string): number {
   let score = 0;
+  const n = name.toLowerCase();
   if (kind === 'wifi-lan') score += 100;
   if (kind === 'ethernet-lan') score += 95;
-  if (kind === 'virtual') score += 20;
+  if (kind === 'virtual') {
+    score += 20;
+    // Bridged Hyper-V external switches often carry the real LAN (e.g. Anka2-External).
+    if (
+      address.startsWith('192.168.') &&
+      !n.includes('default switch') &&
+      !n.includes('wsl')
+    ) {
+      score += 45;
+    }
+  }
   if (kind === 'overlay') score += 30;
   if (kind === 'link-local') score -= 50;
   if (kind === 'other') score += 10;
@@ -55,7 +66,7 @@ export function listIpv4Adapters(): NetworkAdapterInfo[] {
         internal: entry.internal,
         family: 'IPv4',
         kind,
-        score: scoreAdapter(kind, entry.address),
+        score: scoreAdapter(kind, entry.address, name),
         recommended: false,
       });
     }

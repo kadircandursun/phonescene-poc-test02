@@ -28,3 +28,15 @@
 
 **Decision:** No Android app work in current PoC.  
 **Why:** Master prompt: Android last; after iOS+Windows proven.
+
+## 2026-11-09 — Extend DataChannel with `pose` without breaking `sensor`
+
+**Decision:** Add optional `type:"pose"` JSON; keep Safari `sensor` path unchanged.  
+**Why:** Native 6DoF needs position + quat; TEST 02–04 must not regress.  
+**Result:** Receiver branches on payload type; 3DoF OrientationTracker remains default.
+
+## 2026-11-09 — ARKit→Three axis map `(x,y,-z)`
+
+**Decision:** Map relative ARKit camera translation/rotation with Z flip into VirtualRoom.  
+**Why:** Align phone forward motion with room look-into (-Z).  
+**Note:** Final validation requires hardware; map may be tuned after Phase 5.
