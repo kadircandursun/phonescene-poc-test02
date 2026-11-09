@@ -1,27 +1,25 @@
 # PROJECT_STATUS
 
 **Updated:** 2026-11-09  
-**Current phase:** TestFlight CI tetiklendi · App **Mervelere** (`com.mervelere.app`)
+**Current phase:** TestFlight upload PASS · iPhone kurulum bekleniyor · **Mervelere**
 
 ## Completed
 
 - TEST 01–04 web PoC + Companion
-- Swift/ARKit + XcodeGen + sideload IPA CI PASS
-- ASC app **Mervelere** + Distribution cert/p12 + App Store profile + API key
-- GitHub Secrets (signing + ASC API) dolu
-- Repo: https://github.com/kadircandursun/phonescene-poc-test02
+- ASC app **Mervelere** (`com.mervelere.app`) + signing secrets
+- **iOS TestFlight CI PASS** — archive + export + ASC upload  
+  https://github.com/kadircandursun/phonescene-poc-test02/actions/runs/42630713672
 
 ## In progress / blocked
 
-- Actions run: https://github.com/kadircandursun/phonescene-poc-test02/actions/runs/42630126874
-- TestFlight iPhone kurulumu — **NOT TESTED**
+- TestFlight iPhone kurulumu / Start AR — **NOT TESTED** (cihaz)
 
-## Next action
+## Next action (kullanıcı)
 
-1. Actions yeşil olunca ASC → TestFlight’ta build bekle  
-2. Internal tester (kendin) ekle  
-3. iPhone TestFlight → Mervelere kur → Start AR  
+1. App Store Connect → TestFlight → build işlensin (5–30 dk)  
+2. Internal tester olarak kendini ekle (gerekirse)  
+3. iPhone **TestFlight** → **Mervelere** kur → Start AR  
 
 ## User actions required
 
-- TestFlight’ta build görünce kur ve sonucu bildir
+- TestFlight’tan kurulum + AR sonucu bildir
