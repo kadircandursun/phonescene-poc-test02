@@ -52,7 +52,9 @@
 - CI run `42630713672`: **PASS** (archive + IPA + ASC upload + artifact)
 - TestFlight device install: **PASS** (user report 2026-11-09; Internal group + kadircandursun@icloud.com)
 - Start AR / ARKit on device (build 1): **FAIL** — crash, no camera prompt; IPA missing `NSCameraUsageDescription`
-- Start AR (build 2+): **NOT TESTED** (fix pending upload)
+- Build 2 upload: **FAIL** — CFBundleVersion stuck at 1
+- Build 3 upload (run `42634991920`): **PASS** — camera plist + CFBundleVersion 3
+- Start AR (build 3): **NOT TESTED** (await user)
 
 ## Native LAN WebRTC
 
