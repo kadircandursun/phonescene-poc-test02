@@ -54,7 +54,7 @@
 - Start AR / ARKit on device (build 1): **FAIL** — crash, no camera prompt; IPA missing `NSCameraUsageDescription`
 - Build 2 upload: **FAIL** — CFBundleVersion stuck at 1
 - Build 3 upload (run `42634991920`): **PASS** — camera plist + CFBundleVersion 3
-- Start AR (build 3): **NOT TESTED** (await user)
+- Start AR (build 3): **PASS** (user report 2026-11-09; camera prompt + session runs)
 
 ## Native LAN WebRTC
 

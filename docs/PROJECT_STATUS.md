@@ -1,24 +1,25 @@
 # PROJECT_STATUS
 
 **Updated:** 2026-11-09  
-**Current phase:** TestFlight build **3** (1.0.1) uploaded · Start AR retest · **Mervelere**
+**Current phase:** iOS ARKit Start AR **PASS** (TestFlight build 3) · **Mervelere**
 
 ## Completed
 
-- Build 1 crash: missing `NSCameraUsageDescription` (fixed)
-- Build 2 upload fail: CFBundleVersion stuck at 1 (fixed → build 3)
-- TestFlight CI PASS: https://github.com/kadircandursun/phonescene-poc-test02/actions/runs/42634991920
+- TEST 01–04 web PoC + Companion
+- TestFlight CI + device install
+- Start AR crash fix (`NSCameraUsageDescription` + CFBundleVersion)
+- **Start AR on device PASS** (user report 2026-11-09, build 1.0.1 / 3)
 
 ## In progress / blocked
 
-- Start AR on build 3 — **NOT TESTED**
+- Native LAN WebRTC (phone → Windows) — **NOT TESTED**
+- Android — out of scope until iOS+Windows PoC approved
 
-## Next action (kullanıcı)
+## Next action
 
-1. TestFlight’ta **1.0.1 (3)** gelsin / güncelle  
-2. **Start AR** → kamera izni çıkmalı  
-3. Tracking / pose satırını bildir  
+1. Pose satırı / tracking mode notu (6DoF vs 3DoF) — varsa ekle  
+2. Phase 3: native WebRTC / Companion eşleşme  
 
 ## User actions required
 
-- Build 3 kurulum + Start AR sonucu
+- İsteğe bağlı: Start AR sırasında Mode + pose satırını yaz (6DoF kanıtı)
