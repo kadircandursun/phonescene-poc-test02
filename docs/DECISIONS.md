@@ -53,6 +53,12 @@
 ## 2026-11-09 — Free device install path: Actions IPA + Sideloadly
 
 **Decision:** First native binary via GitHub Actions unsigned IPA + Sideloadly + free Apple ID.  
-**Why:** User has iPhone, no Mac, no paid Apple Developer yet.  
-**Limits:** ~7-day cert; max ~3 sideload apps; not App Store.  
-**Alt later:** paid Developer + TestFlight, or rented Cloud Mac for Xcode debug.
+**Why:** User has iPhone, no Mac; initial path without paid portal setup.  
+**Limits:** ~7-day cert; USB usually required first time.  
+
+## 2026-11-09 — Prefer TestFlight (user has Apple Developer)
+
+**Decision:** Primary wireless install path = signed CI build → TestFlight.  
+**Why:** User already has Apple Developer; no cable; better for ARKit device testing.  
+**Keep:** Sideload workflow as fallback.  
+**Secrets:** Distribution p12 + App Store profile + ASC API key in GitHub Actions only.
