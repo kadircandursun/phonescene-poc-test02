@@ -22,8 +22,8 @@ targets:
         excludes:
           - "**/.DS_Store"
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.phonescene.poc
-      PRODUCT_NAME: PhoneSceneIOS
+      PRODUCT_BUNDLE_IDENTIFIER: com.mervelere.app
+      PRODUCT_NAME: Mervelere
       INFOPLIST_FILE: PhoneSceneIOS/Info.plist
       GENERATE_INFOPLIST_FILE: false
       CODE_SIGN_STYLE: Manual

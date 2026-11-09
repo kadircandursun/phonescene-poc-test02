@@ -6,9 +6,9 @@ struct ContentView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                Text("PhoneScene iOS")
+                Text("Mervelere")
                     .font(.largeTitle.bold())
-                Text("ARKit fizibilite PoC (sideload build)")
+                Text("PhoneScene ARKit PoC")
                     .foregroundStyle(.secondary)
 
                 Group {

@@ -120,7 +120,7 @@ jobs:
         run: |
           set -euo pipefail
           /usr/libexec/PlistBuddy -c "Set :teamID $APPLE_TEAM_ID" ExportOptions-AppStore.plist
-          /usr/libexec/PlistBuddy -c "Set :provisioningProfiles:com.phonescene.poc $PROFILE_NAME" ExportOptions-AppStore.plist
+          /usr/libexec/PlistBuddy -c "Set :provisioningProfiles:com.mervelere.app $PROFILE_NAME" ExportOptions-AppStore.plist
           xcodebuild -exportArchive \
             -archivePath build/PhoneSceneIOS.xcarchive \
             -exportPath build/export \

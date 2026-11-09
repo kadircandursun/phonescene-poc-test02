@@ -2,23 +2,23 @@
 
 Apple Developer hesabın var; Mac yok. Build GitHub Actions’ta, indirme TestFlight’tan.
 
-Bundle ID: `com.phonescene.poc`
+Bundle ID: `com.mervelere.app`
 
 ## 1) Apple Developer / App Store Connect
 
 1. [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list)
 2. **Identifiers → +** → App IDs → App  
-   - Description: `PhoneScene PoC`  
-   - Bundle ID: **Explicit** `com.phonescene.poc`  
+   - Description: `Mervelere`  
+   - Bundle ID: **Explicit** `com.mervelere.app`  
    - Capabilities: gerekirse boş bırak (Camera Info.plist’te)
 3. **Certificates → +** → **Apple Distribution**  
    - CSR: Windows’ta OpenSSL ile veya başka Mac’ten; yoksa geçici cloud Mac / arkadaş Mac  
    - Sertifikayı indir → Keychain’den / oluşturduğun yerden **.p12** export et (şifre koy)
 4. **Profiles → +** → **App Store Connect**  
-   - App ID: `com.phonescene.poc`  
+   - App ID: `com.mervelere.app`  
    - Distribution cert seç → indir `.mobileprovision`
 5. [App Store Connect](https://appstoreconnect.apple.com) → **My Apps → +**  
-   - Bundle ID: `com.phonescene.poc`  
+   - Bundle ID: `com.mervelere.app`  
    - Name: PhoneScene PoC  
    - Skips / metadata: Internal Testing için minimum yeterli
 6. **Users and Access → Integrations → App Store Connect API** → **Generate API Key**  

@@ -14,7 +14,7 @@
 	<false/>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.phonescene.poc</key>
+		<key>com.mervelere.app</key>
 		<string>PROVISIONING_PROFILE_NAME_PLACEHOLDER</string>
 	</dict>
 </dict>
