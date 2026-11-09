@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.env
+.env.*
+certs/*.pem
+!certs/.gitkeep
+.tunnel-url.txt
+CURRENT.md
+apps/windows/src-tauri/target/
+*.p12
+*.mobileprovision
+.idea/
+.vscode/
+# Nested accidental legacy copy — do not treat as source of truth
+/phonescene-poc-test02/

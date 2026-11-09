@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>PhoneScene · Windows Receiver</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+  </head>
+  <body>
+    <div class="shell shell-wide" id="appShell">
+      <header class="brand chrome-only">
+        <div class="brand-mark">PhoneScene · TEST 04</div>
+        <h1>Windows Receiver</h1>
+        <p class="lead">Final composite → Broadcast Mode → OBS Window Capture → Virtual Camera.</p>
+      </header>
+
+      <div class="layout desktop">
+        <section class="panel panel-preview">
+          <div class="preview-header chrome-only">
+            <h2>Live Preview</h2>
+            <div class="actions preview-actions">
+              <button id="broadcastBtn" class="primary" type="button">Broadcast Mode</button>
+              <button id="fullscreenBtn" class="ghost" type="button">Tam ekran</button>
+            </div>
+          </div>
+          <div class="preview preview-composite" id="previewBox">
+            <canvas id="output" class="output-canvas"></canvas>
+            <video id="remote" class="desktop hidden-media" autoplay playsinline muted></video>
+            <canvas id="room" class="hidden-media"></canvas>
+          </div>
+          <div class="broadcast-hud" id="broadcastHud" hidden>
+            <span id="broadcastLabel">BROADCAST · OBS Window Capture</span>
+            <button id="exitBroadcastBtn" class="ghost" type="button">Çık (Esc)</button>
+          </div>
+          <div class="meta chrome-only">
+            <div><small>Alpha</small><strong id="alpha">—</strong></div>
+            <div><small>Beta</small><strong id="beta">—</strong></div>
+            <div><small>Gamma</small><strong id="gamma">—</strong></div>
+          </div>
+          <div class="stats chrome-only">
+            <div class="stat"><small>Video FPS</small><strong id="fps">—</strong></div>
+            <div class="stat"><small>Composite FPS</small><strong id="compFps">—</strong></div>
+            <div class="stat"><small>Çözünürlük</small><strong id="resolution">—</strong></div>
+            <div class="stat"><small>Seg ms</small><strong id="segMs">—</strong></div>
+            <div class="stat"><small>Seg FPS</small><strong id="segFps">—</strong></div>
+            <div class="stat"><small>Pose Hz</small><strong id="poseHz">—</strong></div>
+            <div class="stat"><small>WebRTC</small><strong id="webrtc">—</strong></div>
+            <div class="stat"><small>DataChannel</small><strong id="data">—</strong></div>
+          </div>
+        </section>
+
+        <div class="chrome-only" id="sideChrome">
+          <section class="panel">
+            <h2>Oturum</h2>
+            <label for="code">Eşleştirme kodu</label>
+            <input id="code" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="000000" />
+            <div class="actions">
+              <button id="connect" class="primary" type="button">Alıcıyı başlat</button>
+              <button id="disconnect" class="ghost" type="button" disabled>Sonlandır</button>
+            </div>
+            <p id="status" class="status" data-tone="idle">Telefon bekleniyor.</p>
+            <div class="pill-row">
+              <span id="phoneState" class="pill" data-state="idle">Telefon: bağlı değil</span>
+              <span id="signalState" class="pill" data-state="idle">Sinyal: kapalı</span>
+              <span id="segState" class="pill" data-state="idle">Seg: idle</span>
+            </div>
+          </section>
+
+          <section class="panel" style="margin-top: 14px;">
+            <h2>Scene Controls</h2>
+            <label for="sceneSelect">Sahne</label>
+            <select id="sceneSelect" class="control-select">
+              <option value="loft">Loft oda</option>
+              <option value="studio">Studio</option>
+            </select>
+
+            <label for="previewMode">Önizleme</label>
+            <select id="previewMode" class="control-select">
+              <option value="final">Final composite</option>
+              <option value="raw">Raw camera</option>
+              <option value="scene">Yalnız 3D sahne</option>
+            </select>
+
+            <label for="outputProfile">Yayın profili (OBS)</label>
+            <select id="outputProfile" class="control-select">
+              <option value="portrait" selected>Portrait 720×1280 (9:16)</option>
+              <option value="landscape">Landscape 1280×720 (16:9)</option>
+            </select>
+
+            <label for="quality">Kalite</label>
+            <select id="quality" class="control-select">
+              <option value="performance">Performance</option>
+              <option value="balanced" selected>Balanced</option>
+              <option value="quality">Quality</option>
+            </select>
+
+            <div class="toggle-grid">
+              <label class="toggle"><input id="tog3d" type="checkbox" checked /> 3D sahne</label>
+              <label class="toggle"><input id="togSeg" type="checkbox" checked /> Segmentasyon</label>
+              <label class="toggle"><input id="togTrack" type="checkbox" checked /> Tracking</label>
+            </div>
+
+            <div class="actions" style="margin-top: 10px;">
+              <button id="recenter" class="ghost" type="button">Recenter</button>
+            </div>
+            <p class="note">3D oda için telefonu yüzünün önünde dik tutup <strong>Recenter</strong>’a bas. Yukarı bakınca tavan, aşağı bakınca zemin görünür. Broadcast Mode UI’yi gizler (Esc çıkış).</p>
+          </section>
+
+          <section class="panel" style="margin-top: 14px;">
+            <h2>Diagnostics</h2>
+            <div class="stats">
+              <div class="stat"><small>Dropped/late</small><strong id="dropped">0</strong></div>
+              <div class="stat"><small>Seg status</small><strong id="segStatus">—</strong></div>
+            </div>
+            <pre id="debug" class="debug">Hazır.</pre>
+          </section>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

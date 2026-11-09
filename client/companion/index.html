@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>PhoneScene · Windows Companion</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+  </head>
+  <body>
+    <div class="shell shell-wide">
+      <header class="brand">
+        <div class="brand-mark">PhoneScene · Windows Companion</div>
+        <h1>Kontrol paneli</h1>
+        <p class="lead">Yerel sunucu, ağ adaptörleri, eşleştirme kodu ve Receiver erişimi. Mevcut WebRTC pipeline’ı bozmaz.</p>
+      </header>
+
+      <div class="layout desktop">
+        <section class="panel">
+          <h2>Sunucu</h2>
+          <div class="stats">
+            <div class="stat"><small>Durum</small><strong id="srvStatus">—</strong></div>
+            <div class="stat"><small>Port</small><strong id="srvPort">—</strong></div>
+            <div class="stat"><small>Uptime</small><strong id="srvUp">—</strong></div>
+            <div class="stat"><small>Pair code</small><strong id="pairCode">—</strong></div>
+          </div>
+          <div class="pill-row" style="margin-top:12px;">
+            <span id="pillMobile" class="pill" data-state="idle">Mobile: —</span>
+            <span id="pillDesktop" class="pill" data-state="idle">Desktop: —</span>
+            <span id="pillPeer" class="pill" data-state="idle">Peer: —</span>
+          </div>
+          <div class="actions" style="margin-top:14px;">
+            <a id="openReceiver" class="primary button-link" href="/desktop/">Receiver’ı aç</a>
+            <a id="openBroadcast" class="ghost button-link" href="/desktop/">Receiver (Broadcast için)</a>
+          </div>
+          <p id="status" class="status" data-tone="idle">Durum yükleniyor…</p>
+        </section>
+
+        <section class="panel">
+          <h2>Ağ adaptörleri</h2>
+          <p class="note">Sabit IP yok. Önerilen adaptör yerel Wi‑Fi/Ethernet tercihine göre seçilir (Hyper‑V/WSL/ZeroTier düşük öncelik).</p>
+          <div id="adapters" class="adapter-list"></div>
+          <p class="note" style="margin-top:12px;">
+            iPhone Safari kamera için hâlâ güvenli HTTPS gerekir → <code>npm run tunnel</code>.
+            Native iOS (Phase 2+) LAN’ı doğrudan kullanacak.
+          </p>
+        </section>
+      </div>
+
+      <section class="panel" style="margin-top:14px;">
+        <h2>Hızlı log</h2>
+        <pre id="log" class="debug">Companion hazır.</pre>
+      </section>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

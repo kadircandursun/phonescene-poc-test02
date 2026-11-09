@@ -1,0 +1,35 @@
+{
+  "name": "phonescene-poc",
+  "version": "0.0.2",
+  "private": true,
+  "description": "PhoneScene PoC — Companion + WebRTC Receiver + 3D composite + OBS broadcast path",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "start": "npm run build && tsx server/index.ts",
+    "companion": "node scripts/start-companion.mjs",
+    "tunnel": "powershell -ExecutionPolicy Bypass -File scripts/start-tunnel.ps1",
+    "smoke": "node scripts/smoke-test.mjs",
+    "check": "tsc --noEmit && vite build"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "^0.10.21",
+    "three": "^0.175.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/three": "^0.175.0",
+    "@types/ws": "^8.18.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "esbuild@0.25.12": true
+  }
+}

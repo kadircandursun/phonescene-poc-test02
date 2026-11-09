@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <title>PhoneScene · Mobil</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="brand">
+        <div class="brand-mark">PhoneScene</div>
+        <h1>Mobil gönderici</h1>
+        <p class="lead">Ön kamera ve yön sensörlerini Windows alıcısına aktarır. Kamera yalnızca düğmeye basınca açılır.</p>
+      </header>
+
+      <div class="layout">
+        <section class="panel">
+          <h2>Bağlantı</h2>
+          <label for="code">Eşleştirme kodu (terminal)</label>
+          <input id="code" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="000000" />
+          <div class="actions">
+            <button id="connect" class="primary" type="button">Bağlan</button>
+            <button id="disconnect" class="ghost" type="button" disabled>Kes</button>
+          </div>
+          <p id="status" class="status" data-tone="idle">Sayfa yükleniyor…</p>
+          <div class="pill-row">
+            <span id="pcState" class="pill" data-state="idle">PC: bekleniyor</span>
+            <span id="camState" class="pill" data-state="idle">Kamera: kapalı</span>
+            <span id="sensorState" class="pill" data-state="idle">Sensör: bilinmiyor</span>
+          </div>
+          <p id="sensorWarning" class="warning">Sensör izni yok veya desteklenmiyor. Video aktarımı devam eder.</p>
+        </section>
+
+        <section class="panel">
+          <h2>Kamera önizleme</h2>
+          <div class="preview">
+            <video id="preview" autoplay playsinline muted></video>
+          </div>
+          <div class="meta">
+            <div><small>Alpha</small><strong id="alpha">—</strong></div>
+            <div><small>Beta</small><strong id="beta">—</strong></div>
+            <div><small>Gamma</small><strong id="gamma">—</strong></div>
+          </div>
+          <div class="stats">
+            <div class="stat"><small>FPS</small><strong id="fps">—</strong></div>
+            <div class="stat"><small>Çözünürlük</small><strong id="resolution">—</strong></div>
+          </div>
+          <p class="note">iOS Safari’de hareket izni kullanıcı dokunuşuyla istenir. Ses aktarılmaz.</p>
+        </section>
+      </div>
+    </div>
+    <script>
+      window.__PS_READY__ = false;
+      setTimeout(function () {
+        if (!window.__PS_READY__) {
+          var el = document.getElementById('status');
+          if (el) {
+            el.dataset.tone = 'error';
+            el.textContent = 'JS yüklenemedi. Tunnel URL doğru mu? Sayfayı yenileyin.';
+          }
+        }
+      }, 4000);
+    </script>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
