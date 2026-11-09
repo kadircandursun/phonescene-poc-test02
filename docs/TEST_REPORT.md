@@ -50,7 +50,8 @@
 - App: **Mervelere** (`com.mervelere.app`)
 - Workflow: `.github/workflows/ios-testflight.yml`
 - CI run `42630713672`: **PASS** (archive + IPA + ASC upload + artifact)
-- TestFlight device install / ARKit: **NOT TESTED** (await user)
+- TestFlight device install: **PASS** (user report 2026-11-09; Internal group + kadircandursun@icloud.com)
+- Start AR / ARKit on device: **NOT TESTED** (await user)
 
 ## Native LAN WebRTC
 

@@ -1,7 +1,7 @@
 # PROJECT_STATUS
 
 **Updated:** 2026-11-09  
-**Current phase:** TestFlight upload PASS · iPhone kurulum bekleniyor · **Mervelere**
+**Current phase:** TestFlight device install PASS · Start AR bekleniyor · **Mervelere**
 
 ## Completed
 
@@ -9,17 +9,18 @@
 - ASC app **Mervelere** (`com.mervelere.app`) + signing secrets
 - **iOS TestFlight CI PASS** — archive + export + ASC upload  
   https://github.com/kadircandursun/phonescene-poc-test02/actions/runs/42630713672
+- **TestFlight iPhone kurulumu PASS** (kullanıcı bildirimi, 2026-11-09)
 
 ## In progress / blocked
 
-- TestFlight iPhone kurulumu / Start AR — **NOT TESTED** (cihaz)
+- Start AR / ARKit cihaz kanıtı — **NOT TESTED**
 
 ## Next action (kullanıcı)
 
-1. App Store Connect → TestFlight → build işlensin (5–30 dk)  
-2. Internal tester olarak kendini ekle (gerekirse)  
-3. iPhone **TestFlight** → **Mervelere** kur → Start AR  
+1. iPhone’da **Mervelere** aç  
+2. Kamera izni ver  
+3. **Start AR** → kamera + tracking çalışıyor mu bildir  
 
 ## User actions required
 
-- TestFlight’tan kurulum + AR sonucu bildir
+- Start AR sonucu (PASS/FAIL + kısa not)
