@@ -65,10 +65,11 @@ struct ContentView: View {
 
                 Text(
                     """
-                    Akış:
-                    1) PC’de npm run companion → Receiver aç → pair kodunu al
-                    2) Buraya host IP + kod → Start AR → Connect PC
-                    3) Receiver’da video + poseHz / oda kamerası hareketi
+                    Başlangıç pozu (önemli):
+                    • Telefon dik, ekran sana bakıyor (selfie)
+                    • Sırtın pencereye, yüzün odaya
+                    • Start AR → Connect PC → PC’de Recenter
+                    • İleri=oda, geri=pencere, yukarı=tavan
                     """
                 )
                 .font(.footnote)

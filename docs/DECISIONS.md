@@ -35,16 +35,11 @@
 **Why:** Native 6DoF needs position + quat; TEST 02–04 must not regress.  
 **Result:** Receiver branches on payload type; 3DoF OrientationTracker remains default.
 
-## 2026-11-09 — ARKit→Three axis map (selfie)
+## 2026-11-09 — Selfie 6DoF axis contract
 
-**Decision (updated):** Passthrough `(x,y,z)` + rest camera faces *into* room with window *behind*.  
-**Why:** Hardware: user window behind them; with `(x,y,-z)` + looking at window, walk forward moved away from window while feeling inverted vs body.  
-**Prev:** `(x,y,-z)` assumed rear-cam / look-into-window framing.
-
-## 2026-11-09 — 6DoF position in baseline-local frame
-
-**Decision:** Apply phone translation as baseline-local delta, then rotate into room rest camera — not raw world-axis add.  
-**Why:** Native test: walking back drifted on unaligned world axes.
+**Decision:** Remap phone-local deltas as `(-x, y, -z)` + 180° yaw/mirror on relative quat; rest camera looks into room with window behind.  
+**Why:** Front camera looks at user (toward rear window); virtual cam must look opposite into room. Hardware: forward/back felt inverted until this remap.  
+**Start pose:** upright selfie, back to window, then Recenter after tracking normal.
 
 ## 2026-11-09 — No local Mac: native iOS via rented Cloud Mac (not Expo-only)
 
