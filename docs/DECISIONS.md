@@ -40,3 +40,19 @@
 **Decision:** Map relative ARKit camera translation/rotation with Z flip into VirtualRoom.  
 **Why:** Align phone forward motion with room look-into (-Z).  
 **Note:** Final validation requires hardware; map may be tuned after Phase 5.
+
+## 2026-11-09 — No local Mac: native iOS via rented Cloud Mac (not Expo-only)
+
+**Decision:** Keep Swift/ARKit as the real native path. Without buying a Mac, use short-term **Cloud Mac + Xcode** (or CI for compile-only).  
+**Why:** True front-camera 6DoF needs ARKit; Expo-alone cannot.  
+**Workflow:** Windows/Cursor edits Swift → git push → Cloud Mac Xcode build → install on physical iPhone.  
+**Not chosen now:** Hackintosh / macOS-on-PC VM (Apple license + fragile).  
+**Cost ballpark (2026 research):** ~$10–15/day or ~$80–160/month cloud Mac; Apple Developer ~$99/year still required for device install.  
+**Until rental:** Safari web sender remains the working PoC path.
+
+## 2026-11-09 — Free device install path: Actions IPA + Sideloadly
+
+**Decision:** First native binary via GitHub Actions unsigned IPA + Sideloadly + free Apple ID.  
+**Why:** User has iPhone, no Mac, no paid Apple Developer yet.  
+**Limits:** ~7-day cert; max ~3 sideload apps; not App Store.  
+**Alt later:** paid Developer + TestFlight, or rented Cloud Mac for Xcode debug.

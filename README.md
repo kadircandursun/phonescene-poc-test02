@@ -26,9 +26,17 @@ npm run tunnel
 - `docs/TEST_REPORT.md`
 - `docs/POC_EXIT_CRITERIA.md`
 
+## iOS (Mac yok → Sideload)
+
+```text
+GitHub Actions (ücretsiz macOS) → IPA → Sideloadly → iPhone
+```
+
+Ayrıntı: `apps/ios/README.md` · workflow: `.github/workflows/ios-sideload.yml`
+
 ## Scope
 
-PoC only. Android deferred. Tauri/iOS native builds blocked on this Windows host without Rust/Xcode.
+PoC only. Android deferred. Tauri blocked without Rust. Native iOS compile via GitHub Actions + Sideloadly (not local Xcode).
 
 ## Smoke
 

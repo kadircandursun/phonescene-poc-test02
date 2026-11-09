@@ -1,33 +1,57 @@
-# PhoneScene iOS (Phase 2)
+# PhoneScene iOS (ARKit PoC)
 
-Native Swift + ARKit feasibility scaffold.
+Native SwiftUI + ARKit fizibilite uygulaması.
 
-## Build durumu
+Windows’ta kaynak yazılır; **derleme GitHub Actions (ücretsiz macOS)** ile yapılır; **iPhone’a kurulum Sideloadly** ile yapılır.
 
-**BLOCKED / NOT VERIFIED on this Windows machine** — Xcode / macOS required.
+## Ücretsiz test zinciri (Mac yok)
 
-## Hedef
+### 0) Gerekenler
+- GitHub hesabı (repo **public** → Actions macOS dakikası bedava)
+- iPhone (TrueDepth / Face ID cihazları face tracking için)
+- Ücretsiz Apple ID
+- Windows: [Sideloadly](https://sideloadly.io/) + Apple cihaz sürücüleri / iTunes veya Apple Devices
+- USB kablo
 
-- AVFoundation front camera
-- ARFaceTrackingConfiguration + world tracking when supported
-- Real camera transform (6DoF), not face-pose-as-world
-- 3DoF fallback
-- LAN signaling compatible with existing `/signal` protocol
+### 1) Repoyu GitHub’a push et
+Bu klasör henüz remote’suz olabilir. Örnek:
 
-Kaynak iskeleti: `PhoneSceneIOS/` (Swift dosyaları). Fiziksel cihaz testi Mac’te yapılacak.
+```powershell
+gh repo create phonescene-poc --public --source=. --remote=origin --push
+```
 
-## Kaynak dosyalar
+veya GitHub web’den repo açıp `git remote add origin ...` + `git push -u origin master`.
 
-- `ARSessionManager.swift` — face + world tracking; camera.transform only
-- `PoseWireEncoder.swift` — DataChannel `pose` JSON (docs/PROTOCOL.md)
-- `SignalingClient.swift` — `/signal` join (WebRTC media TBD on Mac)
-- `AppModel.swift` / `ContentView.swift` — UI shell
+### 2) IPA derle
+1. GitHub → **Actions** → **iOS Sideload IPA** → **Run workflow**
+2. Bitince artifact: `PhoneSceneIOS-sideload` → `.ipa` indir
 
-## Mac checklist (kullanıcı)
+### 3) iPhone’a yükle (Sideloadly)
+1. iPhone USB ile bağla, bilgisayarı güven
+2. Sideloadly’yi aç → IPA sürükle
+3. Apple ID gir (ücretsiz olur)
+4. Start
+5. iPhone: **Ayarlar → Genel → VPN ve Cihaz Yönetimi** → geliştiriciye **Güven**
+6. PhoneScene’i aç → kamera izni ver → **Start AR**
 
-1. Xcode 15+ ile yeni iOS App projesi oluştur; bu Sources’ı ekle.
-2. Capabilities: Camera, Motion (gerekirse Local Network).
-3. Gerçek iPhone’da capability probe + 6DoF test matrisi.
-4. WebRTC framework bağlanınca LAN üzerinden mevcut Windows Receiver’a bağlan.
+### Sınırlar
+- Ücretsiz Apple ID: uygulama ~**7 günde** düşer → Sideloadly ile yenile
+- Aynı anda ~3 sideload app
+- Bu build **WebRTC yok** — önce ARKit 6DoF/3DoF kanıtı
+- Simülatör ARFaceTracking için yeterli değil; **gerçek cihaz** şart
+- Sonuçları `docs/TEST_REPORT.md` içine PASS yazmadan önce sen doğrula
 
-**Derleme / cihaz sonucu burada PASS yazılamaz.**
+## Yerel Xcode (Mac olursa)
+```bash
+cd apps/ios
+brew install xcodegen
+xcodegen generate
+open PhoneSceneIOS.xcodeproj
+```
+
+## Kaynaklar
+- `PhoneSceneApp.swift` — giriş
+- `ARSessionManager.swift` — `frame.camera.transform` (face anchor değil)
+- `PoseWireEncoder.swift` / `SignalingClient.swift` — sonraki networking için hazır
+- `project.yml` — XcodeGen
+- `../../.github/workflows/ios-sideload.yml` — CI

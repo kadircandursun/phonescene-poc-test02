@@ -38,10 +38,14 @@
 - Code present in Receiver (`SixDofTracker`)
 - Hardware parallax: **NOT TESTED** (needs native pose sender)
 
-## iOS ARKit
+## iOS ARKit (sideload path)
 
-- Result: **NOT TESTED / BLOCKED** (no Xcode / no device)
+- Method planned: GitHub Actions unsigned IPA → Sideloadly → physical iPhone
+- Workflow: `.github/workflows/ios-sideload.yml`
+- Result: **NOT TESTED** (await GitHub push + user device install)
+- Note: free Apple ID ~7-day expiry
 
 ## Native LAN WebRTC
 
 - Result: **NOT TESTED / BLOCKED**
+

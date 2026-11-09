@@ -3,8 +3,8 @@ import CoreGraphics
 
 #if canImport(ARKit)
 import ARKit
-import RealityKit
 #endif
+
 
 /// Captures front-camera frames + camera transform when world tracking is supported.
 /// IMPORTANT: Face anchor pose ≠ phone world pose. Use frame.camera.transform only.

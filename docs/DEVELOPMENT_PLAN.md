@@ -12,13 +12,16 @@
 - [ ] Tauri shell (blocked: Rust)
 - [ ] Firewall helper with explicit user consent (later)
 
-## PHASE 2 — Native iOS ARKit feasibility 🔄 (source ✅ · device BLOCKED)
+## PHASE 2 — Native iOS ARKit feasibility 🔄
 
 - [x] Swift scaffold + capability hooks
 - [x] PoseWireEncoder / SignalingClient stubs
-- [ ] Xcode project + signing (Mac)
-- [ ] Device capability probes
-- [ ] 6DoF vs 3DoF test matrix on hardware
+- [x] XcodeGen `project.yml` + Info.plist + App icon
+- [x] GitHub Actions unsigned IPA (Sideloadly) workflow
+- [ ] Push to GitHub + first IPA artifact
+- [ ] Sideload on physical iPhone
+- [ ] Device capability probes + 6DoF matrix (user evidence)
+
 
 ## PHASE 3 — iOS → Windows networking 🔄 (protocol ✅ · media BLOCKED)
 

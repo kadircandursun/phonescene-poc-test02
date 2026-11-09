@@ -15,3 +15,9 @@ apps/windows/src-tauri/target/
 .vscode/
 # Nested accidental legacy copy — do not treat as source of truth
 /phonescene-poc-test02/
+# XcodeGen / CI artifacts (generated on Mac runners)
+apps/ios/build/
+apps/ios/*.xcodeproj/
+apps/ios/*.xcworkspace/
+apps/ios/DerivedData/
+
