@@ -19,6 +19,10 @@ apps/windows/src-tauri/target/
 apps/ios/build/
 apps/ios/dist/
 apps/ios/signing/
+distribution.cer
+*.p12
+*.mobileprovision
+AuthKey_*.p8
 apps/ios/*.xcodeproj/
 apps/ios/*.xcworkspace/
 apps/ios/DerivedData/

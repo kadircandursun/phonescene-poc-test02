@@ -1,30 +1,27 @@
 # PROJECT_STATUS
 
 **Updated:** 2026-11-09  
-**Current phase:** TestFlight pipeline hazır · **kullanıcı: ASC + GitHub secrets**
+**Current phase:** TestFlight CI tetiklendi · App **Mervelere** (`com.mervelere.app`)
 
 ## Completed
 
 - TEST 01–04 web PoC + Companion
 - Swift/ARKit + XcodeGen + sideload IPA CI PASS
-- **iOS TestFlight workflow** + `apps/ios/TESTFLIGHT.md`
+- ASC app **Mervelere** + Distribution cert/p12 + App Store profile + API key
+- GitHub Secrets (signing + ASC API) dolu
 - Repo: https://github.com/kadircandursun/phonescene-poc-test02
 
 ## In progress / blocked
 
-- App Store Connect app + Distribution cert/profile + API key secrets
-- TestFlight device install — **NOT TESTED**
-- Kablo yok → Sideload şimdilik pratik değil; TestFlight tercih
+- Actions run: https://github.com/kadircandursun/phonescene-poc-test02/actions/runs/42630126874
+- TestFlight iPhone kurulumu — **NOT TESTED**
 
-## Next action (kullanıcı)
+## Next action
 
-1. `apps/ios/TESTFLIGHT.md` adımlarını uygula  
-2. GitHub Secrets’ı doldur  
-3. Actions → **iOS TestFlight** çalıştır  
-4. TestFlight’tan iPhone’a kur → Start AR  
+1. Actions yeşil olunca ASC → TestFlight’ta build bekle  
+2. Internal tester (kendin) ekle  
+3. iPhone TestFlight → Mervelere kur → Start AR  
 
 ## User actions required
 
-- Apple Developer portal: App ID `com.phonescene.poc`, Distribution .p12, App Store profile, ASC API key  
-- Secrets’ı **chate yapıştırma** — sadece GitHub Secrets  
-- Sonuçları bildir
+- TestFlight’ta build görünce kur ve sonucu bildir
