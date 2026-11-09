@@ -40,10 +40,12 @@
 
 ## iOS ARKit (sideload path)
 
-- Method planned: GitHub Actions unsigned IPA → Sideloadly → physical iPhone
+- Method: GitHub Actions unsigned IPA → Sideloadly → physical iPhone
 - Workflow: `.github/workflows/ios-sideload.yml`
-- Result: **NOT TESTED** (await GitHub push + user device install)
-- Note: free Apple ID ~7-day expiry
+- CI build run `42623051575` (macos-latest): **PASS** (IPA artifact produced)
+- Device install / ARKit on iPhone: **NOT TESTED** (await Sideloadly by user)
+- Note: free Apple ID ~7-day expiry; `macos-14` label cancelled on this account — use `macos-latest`
+
 
 ## Native LAN WebRTC
 

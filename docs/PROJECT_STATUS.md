@@ -1,31 +1,28 @@
 # PROJECT_STATUS
 
 **Updated:** 2026-11-09  
-**Current phase:** iOS sideload build path hazır · GitHub’a push + Sideloadly ile cihaz testi **kullanıcıda**
+**Current phase:** IPA CI **PASS** · Sideloadly ile iPhone kurulumu **kullanıcıda**
 
 ## Completed
 
 - TEST 01–04 web PoC + Companion
-- Swift/ARKit kaynak + XcodeGen `project.yml`
-- GitHub Actions: `.github/workflows/ios-sideload.yml` (unsigned IPA)
-- Sideload kurulum dokümanı: `apps/ios/README.md`
-- Windows 6DoF plumbing + `pose` protokolü (donanımda henüz yok)
+- Swift/ARKit + XcodeGen + GitHub Actions sideload IPA
+- Public repo: https://github.com/kadircandursun/phonescene-poc-test02
+- CI build `42623051575` IPA üretildi (device test yok)
 
 ## In progress / blocked
 
-- Repo GitHub remote’a push (Actions için şart)
-- IPA artifact + Sideloadly ile gerçek iPhone — **NOT TESTED**
+- Sideloadly → fiziksel iPhone ARKit — **NOT TESTED**
 - Native WebRTC (Phase 3) — sonra
 
 ## Next action (kullanıcı)
 
-1. Repoyu **public** GitHub’a push et  
-2. Actions → **iOS Sideload IPA** çalıştır  
-3. IPA’yı Sideloadly ile iPhone’a yükle  
-4. Start AR → Face/World destek + poz satırını not et  
+1. [Sideloadly](https://sideloadly.io/) kur  
+2. IPA: Actions artifact veya `apps/ios/dist/` (yerel indirme)  
+3. USB iPhone → yükle → Güven → **Start AR**  
+4. Face/World + poz satırını buraya yaz  
 
 ## User actions required
 
-- GitHub push (veya `gh repo create ... --push`)
-- Sideloadly + USB iPhone
-- Sonuçları bildir (PASS iddiası yok; sen doğrula)
+- Sideloadly + USB iPhone + ücretsiz Apple ID
+- Sonuçları bildir (cihaz PASS iddiası yok; sen doğrula)
