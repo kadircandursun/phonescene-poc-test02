@@ -8,7 +8,7 @@ struct ContentView: View {
             VStack(alignment: .leading, spacing: 14) {
                 Text("Mervelere")
                     .font(.largeTitle.bold())
-                Text("PhoneScene ARKit PoC")
+                Text("PhoneScene ARKit + WebRTC PoC")
                     .foregroundStyle(.secondary)
 
                 Group {
@@ -29,12 +29,19 @@ struct ContentView: View {
                     .font(.system(.footnote, design: .monospaced))
                     .textSelection(.enabled)
 
-                TextField("Pair code (ileride)", text: $model.pairCode)
+                Text(model.signalState).font(.footnote)
+                Text(model.webrtcState).font(.footnote)
+                Text(model.dataState).font(.footnote)
+
+                TextField("Pair code (6 hane)", text: $model.pairCode)
                     .keyboardType(.numberPad)
                     .textFieldStyle(.roundedBorder)
-                TextField("Windows host", text: $model.serverHost)
+                TextField("Windows host IP", text: $model.serverHost)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                    .textFieldStyle(.roundedBorder)
+                TextField("Port", text: $model.serverPort)
+                    .keyboardType(.numberPad)
                     .textFieldStyle(.roundedBorder)
 
                 HStack {
@@ -48,12 +55,20 @@ struct ContentView: View {
                         .buttonStyle(.bordered)
                 }
 
+                HStack {
+                    Button("Connect PC") { model.connectCompanion() }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(model.connecting && model.webrtcState.contains("connecting"))
+                    Button("Disconnect") { model.disconnectCompanion() }
+                        .buttonStyle(.bordered)
+                }
+
                 Text(
                     """
-                    Notlar:
-                    • Face anchor ≠ telefon world pose; sadece camera.transform kullanılır.
-                    • 6DoF doğrulama gerçek iPhone ister (simülatör yetersiz).
-                    • WebRTC henüz bu build’de yok — önce ARKit kanıtı.
+                    Akış:
+                    1) PC’de npm run companion → Receiver aç → pair kodunu al
+                    2) Buraya host IP + kod → Start AR → Connect PC
+                    3) Receiver’da video + poseHz / oda kamerası hareketi
                     """
                 )
                 .font(.footnote)

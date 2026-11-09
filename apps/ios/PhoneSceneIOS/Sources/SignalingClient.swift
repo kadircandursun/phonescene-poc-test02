@@ -1,7 +1,6 @@
 import Foundation
 
-/// Minimal WebSocket join client matching existing `/signal` protocol.
-/// Full WebRTC media path lands on Mac with a WebRTC pod / framework — NOT verified here.
+/// WebSocket join client matching existing `/signal` protocol (`client/shared/webrtc.ts`).
 final class SignalingClient: NSObject {
     enum Role: String {
         case mobile
@@ -18,6 +17,8 @@ final class SignalingClient: NSObject {
             onState?("invalid pair code")
             return
         }
+        close()
+
         var components = URLComponents()
         components.scheme = "ws"
         components.host = host

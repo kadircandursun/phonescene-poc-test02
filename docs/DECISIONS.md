@@ -62,3 +62,9 @@
 **Why:** User already has Apple Developer; no cable; better for ARKit device testing.  
 **Keep:** Sideload workflow as fallback.  
 **Secrets:** Distribution p12 + App Store profile + ASC API key in GitHub Actions only.
+
+## 2026-11-09 — Native iOS WebRTC via stasel binary SPM
+
+**Decision:** Link `stasel/WebRTC` XCFramework; feed `ARFrame.capturedImage` into `RTCVideoSource`; pose on `sensors` DataChannel.  
+**Why:** Same `/signal` + offer/answer/ICE + `pose` contract as web; no Safari HTTPS tunnel for LAN.  
+**Not chosen:** WKWebView wrapper of mobile web client (would bypass ARKit camera.transform path).

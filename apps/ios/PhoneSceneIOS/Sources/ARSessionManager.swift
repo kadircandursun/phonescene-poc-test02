@@ -16,6 +16,7 @@ final class ARSessionManager: NSObject {
         var rotation: simd_quatf
         var trackingState: String
         var intrinsics: simd_float3x3?
+        var pixelBuffer: CVPixelBuffer?
     }
 
     var onPose: ((PoseSample) -> Void)?
@@ -100,7 +101,8 @@ extension ARSessionManager: ARSessionDelegate {
                 position: position,
                 rotation: rotation,
                 trackingState: state,
-                intrinsics: frame.camera.intrinsics
+                intrinsics: frame.camera.intrinsics,
+                pixelBuffer: frame.capturedImage
             )
         )
     }

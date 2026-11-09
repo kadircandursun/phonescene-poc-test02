@@ -21,9 +21,17 @@ Native SwiftUI + ARKit. Windows’ta kaynak; derleme GitHub Actions.
 2. USB + Sideloadly + Apple ID  
 3. Ayarlar → VPN ve Cihaz Yönetimi → Güven  
 
+## LAN WebRTC (build 4+)
+
+1. PC: `npm run companion` → Receiver açık, pair kodu görünür  
+2. iPhone Mervelere: Windows LAN IP + port `8787` + kod  
+3. **Start AR** → **Connect PC**  
+4. Receiver’da video + `pose` / oda kamerası  
+
 ## Kaynaklar
 
-- Bundle ID: `com.phonescene.poc`
+- Bundle ID: `com.mervelere.app`
 - `ARSessionManager.swift` — `frame.camera.transform` (face anchor değil)
-- `project.yml` — XcodeGen
+- `WebRTCPeer.swift` — stasel WebRTC + `sensors` DataChannel
+- `project.yml` — XcodeGen + SPM
 - Workflows: `ios-testflight.yml`, `ios-sideload.yml`

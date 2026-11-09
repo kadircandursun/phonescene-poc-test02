@@ -62,5 +62,6 @@
 
 ## Native LAN WebRTC
 
-- Result: **NOT TESTED / BLOCKED**
+- Implementation (build 4+): stasel WebRTC SPM + ARFrame video + `pose` on `sensors` DC
+- CI / device LAN path: **NOT TESTED** (await TestFlight build 4 + same Wi‑Fi)
 
