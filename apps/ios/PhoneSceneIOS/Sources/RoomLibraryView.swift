@@ -6,7 +6,6 @@ struct RoomLibraryView: View {
     @ObservedObject var store: RoomLibraryStore
     var onWillCapture: (() -> Void)? = nil
     @State private var showCamera = false
-    @State private var showRoomPlan = false
     @State private var pickerItem: PhotosPickerItem?
     @State private var renameTarget: SavedRoom?
     @State private var renameText = ""
@@ -28,19 +27,10 @@ struct RoomLibraryView: View {
                 PhotosPicker(selection: $pickerItem, matching: .images, photoLibrary: .shared()) {
                     Label("Galeriden seç", systemImage: "photo.on.rectangle")
                 }
-
-                if RoomCaptureController.isDeviceSupported {
-                    Button {
-                        onWillCapture?()
-                        showRoomPlan = true
-                    } label: {
-                        Label("3D tara (ileri, opsiyonel)", systemImage: "cube.transparent")
-                    }
-                }
             } header: {
                 Text("Oda ekle")
             } footer: {
-                Text("V1: oda fotoğrafı yeterli. 3D tarama şart değil.")
+                Text("V1: oda fotoğrafı çek veya galeriden seç. 3D tarama sonra.")
             }
 
             Section {
@@ -108,9 +98,6 @@ struct RoomLibraryView: View {
                 askName = true
             }
             .ignoresSafeArea()
-        }
-        .fullScreenCover(isPresented: $showRoomPlan) {
-            RoomCaptureScreen(store: store)
         }
         .onChange(of: pickerItem) { item in
             guard let item else { return }
@@ -217,84 +204,6 @@ struct CameraPicker: UIViewControllerRepresentable {
                 parent.onImage(image)
             }
             parent.dismiss()
-        }
-    }
-}
-
-struct RoomCaptureScreen: View {
-    @ObservedObject var store: RoomLibraryStore
-    @StateObject private var controller = RoomCaptureController()
-    @Environment(\.dismiss) private var dismiss
-    @State private var roomName = ""
-    @State private var saveError: String?
-
-    var body: some View {
-        NavigationStack {
-            ZStack {
-                #if canImport(RoomPlan)
-                RoomCaptureViewRepresentable(controller: controller)
-                    .ignoresSafeArea()
-                #else
-                Color.black.ignoresSafeArea()
-                Text("RoomPlan yok").foregroundStyle(.white)
-                #endif
-
-                VStack {
-                    Spacer()
-                    VStack(spacing: 12) {
-                        Text(controller.statusMessage)
-                            .font(.subheadline.weight(.medium))
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-
-                        if controller.canSave {
-                            TextField("Oda adı", text: $roomName)
-                                .textFieldStyle(.roundedBorder)
-                                .padding(.horizontal)
-                        }
-
-                        HStack(spacing: 12) {
-                            if controller.isScanning {
-                                Button("Durdur") { controller.stop() }
-                                    .buttonStyle(.borderedProminent)
-                            } else if controller.isProcessing {
-                                ProgressView("İşleniyor…")
-                            } else if controller.canSave {
-                                Button("Kaydet") {
-                                    do {
-                                        _ = try controller.exportToLibrary(name: roomName, store: store)
-                                        dismiss()
-                                    } catch {
-                                        saveError = error.localizedDescription
-                                    }
-                                }
-                                .buttonStyle(.borderedProminent)
-                            } else {
-                                Button("Taramayı başlat") { controller.start() }
-                                    .buttonStyle(.borderedProminent)
-                            }
-                        }
-
-                        if let err = controller.lastError ?? saveError {
-                            Text(err).font(.caption).foregroundStyle(.red)
-                        }
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(.ultraThinMaterial)
-                }
-            }
-            .navigationTitle("3D tara")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Kapat") {
-                        if controller.isScanning { controller.stop() }
-                        dismiss()
-                    }
-                }
-            }
-            .onAppear { controller.start() }
         }
     }
 }

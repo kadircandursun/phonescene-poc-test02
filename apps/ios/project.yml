@@ -31,7 +31,6 @@ targets:
       - sdk: ARKit.framework
       - sdk: AVFoundation.framework
       - sdk: Vision.framework
-      - sdk: RoomPlan.framework
       - package: WebRTC
         product: WebRTC
     settings:

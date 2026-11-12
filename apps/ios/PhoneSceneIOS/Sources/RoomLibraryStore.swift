@@ -97,45 +97,6 @@ final class RoomLibraryStore: ObservableObject {
         return room
     }
 
-    @discardableResult
-    func saveUsdzRoom(
-        name: String,
-        usdzData: Data,
-        jsonData: Data?,
-        wallCount: Int,
-        objectCount: Int
-    ) throws -> SavedRoom {
-        let id = UUID().uuidString
-        let folder = Self.roomsDirectory().appendingPathComponent(id, isDirectory: true)
-        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-
-        let fileName = "room.usdz"
-        try usdzData.write(to: folder.appendingPathComponent(fileName), options: .atomic)
-
-        var jsonName: String?
-        if let jsonData {
-            jsonName = "room.json"
-            try jsonData.write(to: folder.appendingPathComponent(jsonName!), options: .atomic)
-        }
-
-        let room = SavedRoom(
-            id: id,
-            name: Self.displayName(name),
-            createdAt: Date(),
-            kind: .usdz,
-            fileName: fileName,
-            wallCount: wallCount,
-            objectCount: objectCount,
-            jsonFileName: jsonName
-        )
-        var next = rooms
-        next.insert(room, at: 0)
-        try writeIndex(next)
-        rooms = next
-        selectedRoomId = id
-        return room
-    }
-
     func rename(_ id: String, to name: String) throws {
         guard let idx = rooms.firstIndex(where: { $0.id == id }) else { return }
         var next = rooms
