@@ -10,8 +10,8 @@ settings:
   SWIFT_VERSION: "5.0"
   TARGETED_DEVICE_FAMILY: "1"
   IPHONEOS_DEPLOYMENT_TARGET: "16.0"
-  CURRENT_PROJECT_VERSION: "4"
-  MARKETING_VERSION: "1.0.2"
+  CURRENT_PROJECT_VERSION: "5"
+  MARKETING_VERSION: "1.0.3"
 
 packages:
   WebRTC:
@@ -30,13 +30,15 @@ targets:
     dependencies:
       - sdk: ARKit.framework
       - sdk: AVFoundation.framework
+      - sdk: Vision.framework
+      - sdk: RoomPlan.framework
       - package: WebRTC
         product: WebRTC
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.mervelere.app
       PRODUCT_NAME: Mervelere
-      CURRENT_PROJECT_VERSION: "4"
-      MARKETING_VERSION: "1.0.2"
+      CURRENT_PROJECT_VERSION: "5"
+      MARKETING_VERSION: "1.0.3"
       INFOPLIST_FILE: PhoneSceneIOS/Info.plist
       GENERATE_INFOPLIST_FILE: "NO"
       CODE_SIGN_STYLE: Manual
@@ -59,9 +61,10 @@ targets:
       path: PhoneSceneIOS/Info.plist
       properties:
         CFBundleDisplayName: Mervelere
-        CFBundleShortVersionString: "1.0.2"
-        CFBundleVersion: "4"
-        NSCameraUsageDescription: PhoneScene ön kamerayı sanal mekân PoC için kullanır.
+        CFBundleShortVersionString: "1.0.3"
+        CFBundleVersion: "5"
+        NSCameraUsageDescription: Mervelere oda fotoğrafı çekmek ve canlı yerleşim için kamerayı kullanır.
+        NSPhotoLibraryUsageDescription: Mervelere kayıtlı oda fotoğraflarını mekân kütüphanesine eklemek için galeriye erişir.
         NSMotionUsageDescription: PhoneScene cihaz yönünü 3DoF yedek takip için kullanır.
         NSLocalNetworkUsageDescription: PhoneScene Windows Companion ile yerel ağda eşleşmek için kullanılır.
         NSBonjourServices:

@@ -27,7 +27,11 @@ final class WebRTCPeer: NSObject {
     private let videoSource: RTCVideoSource
     private let videoCapturer: RTCVideoCapturer
     let videoTrack: RTCVideoTrack
+    private let alphaSource: RTCVideoSource
+    private let alphaCapturer: RTCVideoCapturer
+    let alphaTrack: RTCVideoTrack
     private var lastVideoPushNs: Int64 = 0
+    private var lastAlphaPushNs: Int64 = 0
 
     override init() {
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: [
@@ -47,9 +51,14 @@ final class WebRTCPeer: NSObject {
         videoSource = Self.sharedFactory.videoSource()
         videoCapturer = RTCVideoCapturer(delegate: videoSource)
         videoTrack = Self.sharedFactory.videoTrack(with: videoSource, trackId: "arCam")
+        alphaSource = Self.sharedFactory.videoSource()
+        alphaCapturer = RTCVideoCapturer(delegate: alphaSource)
+        alphaTrack = Self.sharedFactory.videoTrack(with: alphaSource, trackId: "personAlpha")
         super.init()
         pc.delegate = self
+        // RGB first, alpha second — Receiver uses track order.
         _ = pc.add(videoTrack, streamIds: ["phonescene"])
+        _ = pc.add(alphaTrack, streamIds: ["phonescene-alpha"])
         ensureOutgoingDataChannel()
     }
 
@@ -70,6 +79,18 @@ final class WebRTCPeer: NSObject {
         let buffer = RTCCVPixelBuffer(pixelBuffer: pixelBuffer)
         let frame = RTCVideoFrame(buffer: buffer, rotation: ._90, timeStampNs: tsNs)
         videoSource.capturer(videoCapturer, didCapture: frame)
+    }
+
+    /// Soft person alpha (BGRA luma=alpha). Same rotation as RGB track.
+    func pushAlphaPixelBuffer(_ pixelBuffer: CVPixelBuffer, timestamp: TimeInterval) {
+        let tsNs = Int64(timestamp * 1_000_000_000.0)
+        if lastAlphaPushNs != 0, tsNs - lastAlphaPushNs < 66_000_000 {
+            return
+        }
+        lastAlphaPushNs = tsNs
+        let buffer = RTCCVPixelBuffer(pixelBuffer: pixelBuffer)
+        let frame = RTCVideoFrame(buffer: buffer, rotation: ._90, timeStampNs: tsNs)
+        alphaSource.capturer(alphaCapturer, didCapture: frame)
     }
 
     func sendDataString(_ text: String) {

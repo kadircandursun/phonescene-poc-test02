@@ -32,6 +32,10 @@ Native SwiftUI + ARKit. Windows’ta kaynak; derleme GitHub Actions.
 
 - Bundle ID: `com.mervelere.app`
 - `ARSessionManager.swift` — `frame.camera.transform` (face anchor değil)
-- `WebRTCPeer.swift` — stasel WebRTC + `sensors` DataChannel
-- `project.yml` — XcodeGen + SPM
+- `PersonMatteEngine.swift` — Vision person soft-alpha (boş arka plan yok; hareket OK)
+- `RoomLibraryStore` — V1 oda **fotoğrafı** kütüphane; RoomPlan 3D opsiyonel
+- `WebRTCPeer.swift` — RGB (`arCam`) + alpha (`personAlpha`) + `sensors` DataChannel
+- `project.yml` — XcodeGen + SPM + Vision + RoomPlan
 - Workflows: `ios-testflight.yml`, `ios-sideload.yml`
+
+Yeni IPA / TestFlight build gerekir (UI + Vision + RoomPlan). Bu Windows host’ta Xcode yok.

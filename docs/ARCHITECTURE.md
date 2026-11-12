@@ -1,21 +1,32 @@
-# ARCHITECTURE (PoC)
+# ARCHITECTURE
 
 ```text
-[iPhone Safari web] --HTTPS tunnel--> cloudflared --HTTP--> Node server
-[Future iOS native] --LAN WebRTC----> Node server / Companion
-                                              |
-                              +---------------+---------------+
-                              |                               |
-                         /signal (ws)                   static dist/
-                              |                         companion/
-                         WebRTC P2P                     desktop/ (receiver)
-                         video+pose                     mobile/
-                              |
-                         MediaPipe + Three.js composite
-                              |
-                         Broadcast Mode canvas
-                              |
-                         OBS Window Capture → Virtual Camera
+[iPhone Mervelere]
+  Camera + ARKit · Video + 3DoF/6DoF
+  Vision person soft-alpha (Neural Engine)  ← no empty-bg plate
+        │  LAN WebRTC (RGB + alpha tracks)
+        ▼
+[Windows Desktop App]
+  ├─ WebRTC receive (video + optional phone alpha + pose)
+  ├─ Matting
+  │    primary: phone Vision alpha (when track present)
+  │    fallback: RVM ONNX + MediaPipe person gate
+  │    EP: DirectML → CPU (no RTX required)
+  ├─ Soft alpha composite
+  ├─ 3D Scene Compositor
+  └─ Virtual Camera (PoC: OBS Window Capture)
 ```
 
-Windows Companion (Phase 1) is a control surface on the same Node process — not a second media pipeline.
+## Universal Windows rule
+
+| Layer | Choice | Why |
+| --- | --- | --- |
+| Cutout | **Phone Vision α** → RVM+gate | User/phone move; empty-bg BGM rejected |
+| GPU | **DirectML** then **CPU** | All PCs; no RTX lock-in |
+| Host | Native app later; PoC = browser Receiver + Node | Tauri blocked without Rust |
+
+## Non-goals
+
+- Empty-background capture as product UX  
+- RTX-only path  
+- Android (until approved)

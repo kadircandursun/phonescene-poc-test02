@@ -3,7 +3,7 @@ import { isPosePayload, isSensorPayload, type MediaChannelPayload } from '../sha
 import { $, appendDebug, renderAngles, setStatus, setText } from '../shared/ui';
 import { PhoneScenePeer, wsUrl } from '../shared/webrtc';
 import { SceneCompositor, type OutputProfile, type PreviewMode } from './scene/compositor';
-import type { QualityProfile } from './scene/segmenter';
+import type { QualityProfile } from './scene/matting';
 import type { SceneId } from './scene/room';
 
 const codeInput = $('code') as HTMLInputElement;
@@ -18,9 +18,16 @@ const previewMode = $('previewMode') as HTMLSelectElement;
 const outputProfile = $('outputProfile') as HTMLSelectElement;
 const quality = $('quality') as HTMLSelectElement;
 const tog3d = $('tog3d') as HTMLInputElement;
+const togPhoto = $('togPhoto') as HTMLInputElement;
 const togSeg = $('togSeg') as HTMLInputElement;
 const togTrack = $('togTrack') as HTMLInputElement;
 const recenterBtn = $('recenter') as HTMLButtonElement;
+const roomBgFile = $('roomBgFile') as HTMLInputElement;
+const roomBgClear = $('roomBgClear') as HTMLButtonElement;
+const roomBgRefresh = $('roomBgRefresh') as HTMLButtonElement;
+const roomBgStatus = $('roomBgStatus');
+
+let lastRoomUpdatedAt: number | null = null;
 const broadcastBtn = $('broadcastBtn') as HTMLButtonElement;
 const exitBroadcastBtn = $('exitBroadcastBtn') as HTMLButtonElement;
 const fullscreenBtn = $('fullscreenBtn') as HTMLButtonElement;
@@ -106,14 +113,30 @@ function createPeer() {
         ws.send(JSON.stringify({ type: 'ice', candidate }));
       }
     },
-    onTrack: (stream) => {
+    onTrack: ({ track }) => {
+      if (track.kind !== 'video') return;
+      const id = (track.id || '').toLowerCase();
+      const isAlpha =
+        id.includes('alpha') ||
+        id.includes('matte') ||
+        // Dual-track offer: 2nd video = Vision person alpha
+        (!!remote.srcObject && (remote.srcObject as MediaStream).getVideoTracks().length >= 1);
+
+      if (isAlpha && remote.srcObject) {
+        compositor.attachPhoneAlphaTrack(track);
+        setStatus('status', 'Phone Vision alpha track alındı — boş arka plan gerekmez.', 'ok');
+        log(`alpha track id=${track.id}`);
+        return;
+      }
+
+      const stream = new MediaStream([track]);
       remote.srcObject = stream;
       void remote.play().catch(() => {
         setStatus('status', 'Video oynatmak için sayfaya tıklayın.', 'warn');
       });
       const updateResolution = () => {
-        const w = remote.videoWidth || stream.getVideoTracks()[0]?.getSettings().width;
-        const h = remote.videoHeight || stream.getVideoTracks()[0]?.getSettings().height;
+        const w = remote.videoWidth || track.getSettings().width;
+        const h = remote.videoHeight || track.getSettings().height;
         if (w && h) {
           setText('resolution', `${w}×${h}`);
           log(`resolution ${w}x${h}`);
@@ -122,7 +145,7 @@ function createPeer() {
       remote.addEventListener('loadedmetadata', updateResolution, { once: true });
       remote.addEventListener('resize', updateResolution);
       updateResolution();
-      log('track received');
+      log(`rgb track id=${track.id}`);
     },
     onDataOpen: () => {
       setText('data', 'open');
@@ -267,6 +290,38 @@ async function toggleFullscreen() {
   }
 }
 
+async function refreshRoomBackground(force = false) {
+  try {
+    const st = await fetch('/api/room/status').then((r) => r.json());
+    if (!st?.hasBackground) {
+      roomBgStatus.textContent = 'Oda fotoğrafı yok — telefondan gönder veya buradan yükle.';
+      return;
+    }
+    if (!force && st.updatedAt && st.updatedAt === lastRoomUpdatedAt && compositor.hasPhotoBackground()) {
+      roomBgStatus.textContent = `Oda: ${st.name || 'adsız'} (${Math.round((st.bytes || 0) / 1024)} KB)`;
+      return;
+    }
+    lastRoomUpdatedAt = st.updatedAt ?? Date.now();
+    const ok = await compositor.setPhotoBackgroundFromUrl(
+      `/api/room/background?t=${lastRoomUpdatedAt}`,
+      String(st.name || ''),
+    );
+    if (ok) {
+      togPhoto.checked = true;
+      tog3d.checked = false;
+      compositor.usePhotoBackground = true;
+      compositor.enabled3d = false;
+      roomBgStatus.textContent = `Oda: ${st.name || 'adsız'} · foto BG aktif`;
+      log(`room bg loaded name=${st.name}`);
+    } else {
+      roomBgStatus.textContent = 'Oda fotoğrafı indirilemedi.';
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    log(`room bg: ${message}`);
+  }
+}
+
 function wireControls() {
   sceneSelect.addEventListener('change', () => {
     compositor.setScene(sceneSelect.value as SceneId);
@@ -288,8 +343,19 @@ function wireControls() {
     compositor.setQuality(quality.value as QualityProfile);
     log(`quality=${quality.value}`);
   });
+  togPhoto.addEventListener('change', () => {
+    compositor.usePhotoBackground = togPhoto.checked;
+    if (togPhoto.checked) {
+      tog3d.checked = false;
+      compositor.enabled3d = false;
+    }
+  });
   tog3d.addEventListener('change', () => {
     compositor.enabled3d = tog3d.checked;
+    if (tog3d.checked) {
+      togPhoto.checked = false;
+      compositor.usePhotoBackground = false;
+    }
   });
   togSeg.addEventListener('change', () => {
     compositor.enabledSeg = togSeg.checked;
@@ -300,8 +366,42 @@ function wireControls() {
   });
   recenterBtn.addEventListener('click', () => {
     compositor.recenter();
-    setStatus('status', 'Recenter: dik tutuş = odaya düz bakış. Şimdi çevirerek dene.', 'ok');
+    setStatus('status', 'Recenter: dik tutuş = bakış sıfır. Şimdi çevirerek dene.', 'ok');
     log('recenter');
+  });
+  roomBgRefresh.addEventListener('click', () => {
+    void refreshRoomBackground(true);
+  });
+  roomBgClear.addEventListener('click', () => {
+    void (async () => {
+      await fetch('/api/room/background', { method: 'DELETE' });
+      compositor.clearPhotoBackground();
+      lastRoomUpdatedAt = null;
+      roomBgStatus.textContent = 'Oda fotoğrafı temizlendi.';
+      log('room bg cleared');
+    })();
+  });
+  roomBgFile.addEventListener('change', () => {
+    const file = roomBgFile.files?.[0];
+    if (!file) return;
+    void (async () => {
+      const res = await fetch('/api/room/background', {
+        method: 'POST',
+        headers: {
+          'Content-Type': file.type || 'image/jpeg',
+          'X-Room-Name': encodeURIComponent(file.name),
+        },
+        body: file,
+      });
+      const json = await res.json();
+      if (json?.ok) {
+        await refreshRoomBackground(true);
+        setStatus('status', 'Oda fotoğrafı yüklendi.', 'ok');
+      } else {
+        setStatus('status', `Oda yükleme hata: ${json?.error || res.status}`, 'error');
+      }
+      roomBgFile.value = '';
+    })();
   });
   broadcastBtn.addEventListener('click', () => setBroadcastMode(true));
   exitBroadcastBtn.addEventListener('click', () => setBroadcastMode(false));
@@ -328,6 +428,10 @@ wireControls();
 compositor.setQuality('balanced');
 compositor.setTracking(true);
 compositor.setOutputProfile('portrait');
+compositor.enabled3d = false;
+compositor.usePhotoBackground = true;
+tog3d.checked = false;
+togPhoto.checked = true;
 document.body.dataset.outputProfile = 'portrait';
 compositor.start();
 
@@ -337,9 +441,13 @@ void (async () => {
   const code = await loadPairCode();
   if (code) {
     codeInput.value = code;
-    setStatus('status', `Kod otomatik (${code}). Alıcıyı başlat; 3D sahne zaten render ediyor.`, 'ok');
+    setStatus('status', `Kod otomatik (${code}). Oda fotoğrafı + kesim için telefonu bağla.`, 'ok');
     log(`pairCode=${code}`);
   }
+  await refreshRoomBackground(true);
+  window.setInterval(() => {
+    void refreshRoomBackground(false);
+  }, 2500);
   try {
     await compositor.init((msg) => {
       log(msg);

@@ -68,35 +68,43 @@
           </section>
 
           <section class="panel" style="margin-top: 14px;">
-            <h2>Scene Controls</h2>
-            <label for="sceneSelect">Sahne</label>
-            <select id="sceneSelect" class="control-select">
-              <option value="loft">Loft oda</option>
-              <option value="studio">Studio</option>
-            </select>
+            <h2>Oda arka planı</h2>
+            <p class="note" id="roomBgStatus">Oda fotoğrafı yok — telefondan gönder veya buradan yükle.</p>
+            <input id="roomBgFile" type="file" accept="image/*" class="control-select" />
+            <div class="actions" style="margin-top: 10px;">
+              <button id="roomBgClear" class="ghost" type="button">Arka planı temizle</button>
+              <button id="roomBgRefresh" class="ghost" type="button">Yenile</button>
+            </div>
 
-            <label for="previewMode">Önizleme</label>
-            <select id="previewMode" class="control-select">
-              <option value="final">Final composite</option>
-              <option value="raw">Raw camera</option>
-              <option value="scene">Yalnız 3D sahne</option>
-            </select>
-
-            <label for="outputProfile">Yayın profili (OBS)</label>
+            <label for="outputProfile" style="margin-top: 14px;">Yayın profili (OBS)</label>
             <select id="outputProfile" class="control-select">
               <option value="portrait" selected>Portrait 720×1280 (9:16)</option>
               <option value="landscape">Landscape 1280×720 (16:9)</option>
             </select>
 
-            <label for="quality">Kalite</label>
+            <label for="quality">Kesim kalitesi</label>
             <select id="quality" class="control-select">
               <option value="performance">Performance</option>
               <option value="balanced" selected>Balanced</option>
               <option value="quality">Quality</option>
             </select>
 
+            <label for="previewMode">Önizleme</label>
+            <select id="previewMode" class="control-select">
+              <option value="final">Final composite</option>
+              <option value="raw">Raw camera</option>
+              <option value="scene">Yalnız arka plan</option>
+            </select>
+
+            <label for="sceneSelect">3D yedek sahne</label>
+            <select id="sceneSelect" class="control-select">
+              <option value="loft">Loft oda</option>
+              <option value="studio">Studio</option>
+            </select>
+
             <div class="toggle-grid">
-              <label class="toggle"><input id="tog3d" type="checkbox" checked /> 3D sahne</label>
+              <label class="toggle"><input id="togPhoto" type="checkbox" checked /> Foto BG</label>
+              <label class="toggle"><input id="tog3d" type="checkbox" /> 3D sahne</label>
               <label class="toggle"><input id="togSeg" type="checkbox" checked /> Segmentasyon</label>
               <label class="toggle"><input id="togTrack" type="checkbox" checked /> Tracking</label>
             </div>
@@ -104,7 +112,7 @@
             <div class="actions" style="margin-top: 10px;">
               <button id="recenter" class="ghost" type="button">Recenter</button>
             </div>
-            <p class="note">3D oda için telefonu yüzünün önünde dik tutup <strong>Recenter</strong>’a bas. Yukarı bakınca tavan, aşağı bakınca zemin görünür. Broadcast Mode UI’yi gizler (Esc çıkış).</p>
+            <p class="note">V1: oda fotoğrafı + kişi kesimi. 3D şart değil. Broadcast: Esc.</p>
           </section>
 
           <section class="panel" style="margin-top: 14px;">

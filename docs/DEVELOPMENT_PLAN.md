@@ -1,45 +1,25 @@
 # DEVELOPMENT_PLAN
 
-## PHASE 0 — Audit ✅
+> **Ürün yönü (2026-11-12):** Asıl hedef matte lab değil — kullanıcı odası tarama → kes → kayıtlı 3D mekâna eşzamanlı yerleştir.  
+> Detaylı analiz & teknoloji: [`PRODUCT_VISION_PLAN.md`](./PRODUCT_VISION_PLAN.md)
 
-## PHASE 1 — Windows Desktop Companion ✅ (Tauri deferred)
+## Aktif fazlar (vizyon L1)
 
-- [x] Network discovery API
-- [x] Status/pair API
-- [x] Companion UI
-- [x] Launcher script
-- [x] Smoke coverage
-- [ ] Tauri shell (blocked: Rust)
-- [ ] Firewall helper with explicit user consent (later)
+| Faz | Hedef | Durum |
+| --- | --- | --- |
+| F1 | Vision alpha IPA + Receiver phone path | Kod hazır · cihaz build bekliyor |
+| F2 | **2D oda foto** kütüphane + PC BG + composite | **Kod tamam** (TestFlight ile doğrula) |
+| F3 | 360 / hafif parallax polish (L2) | Sonra |
+| F4 | Matte polish (L3) | Bilinçli sonra |
 
-## PHASE 2 — Native iOS ARKit feasibility 🔄
+## Eski PoC fazları (omurga — çoğunlukla ✅)
 
-- [x] Swift scaffold + capability hooks
-- [x] PoseWireEncoder / SignalingClient stubs
-- [x] XcodeGen `project.yml` + Info.plist + App icon
-- [x] GitHub Actions unsigned IPA (Sideloadly) workflow
-- [ ] Push to GitHub + first IPA artifact
-- [ ] Sideload on physical iPhone
-- [ ] Device capability probes + 6DoF matrix (user evidence)
+### PHASE 0 — Audit ✅
+### PHASE 1 — Windows Companion ✅ (Tauri deferred)
+### PHASE 2–4 — Native iOS + LAN WebRTC + 6DoF ✅ (cihazda doğrulandı)
+### PHASE 5 — Composite + OBS ✅ (PoC kalite)
+### PHASE 6 — Matte lab ⏸ dondur (Vision primary; RVM sessiz fallback)
 
+## Bilinçli erteleme
 
-## PHASE 3 — iOS → Windows networking 🔄 (protocol ✅ · media BLOCKED)
-
-- [x] Document DataChannel `sensor` + `pose` (docs/PROTOCOL.md)
-- [x] Receiver accepts both payloads
-- [ ] Native WebRTC on iOS (Mac)
-- [ ] LAN discovery / QR pairing UX
-- Prefer LAN; tunnel optional for web Safari only
-
-## PHASE 4 — Windows 6DoF in Three.js 🔄 (code ✅ · hardware NOT TESTED)
-
-- [x] Keep 3DoF OrientationTracker path
-- [x] SixDofTracker + ARKit axis map + recenter
-- [x] Unit tests for axis mapping
-- [ ] Live iPhone 6DoF validation
-
-## PHASE 5 — E2E native sender test ⏳
-
-- Hardware required; cannot PASS from source alone
-
-## PoC exit → wait for user before productization
+- Android, RTX zorunluluğu, empty-bg BGM ürün default, Gaussian splat V1, custom VC driver

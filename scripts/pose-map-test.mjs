@@ -1,16 +1,12 @@
 #!/usr/bin/env node
-/** Pure mapping tests — selfie local remap. */
+/** Pure mapping tests — portrait selfie remap (device-tuned). */
 
 function mapSelfieLocalDelta(lx, ly, lz) {
-  return [-lx, ly, -lz];
+  return [ly, -lx, lz];
 }
 
 function mapSelfieRelativeQuat(qx, qy, qz, qw) {
-  const x1 = qz;
-  const y1 = qw;
-  const z1 = qx;
-  const w1 = -qy;
-  return [-x1, y1, -z1, w1];
+  return [qy, qx, -qz, qw];
 }
 
 let failed = 0;
@@ -23,35 +19,48 @@ function assert(cond, msg) {
   }
 }
 
-// Into-room walk (phone +Z) → virtual look (−Z)
+function approx(a, b, eps = 1e-9) {
+  return Math.abs(a - b) < eps;
+}
+
 {
   const [x, y, z] = mapSelfieLocalDelta(0, 0, 0.5);
-  assert(x === 0 && y === 0 && z === -0.5, 'forward (+Z phone) → −Z virtual (into room)');
+  assert(x === 0 && y === 0 && z === 0.5, 'into-room (+Z cam) → +Z virtual (behind cam look; walk fix)');
 }
 
-// Toward window behind (phone −Z / look dir) → virtual +Z (back toward window)
 {
   const [x, y, z] = mapSelfieLocalDelta(0, 0, -0.4);
-  assert(z === 0.4, 'back toward window (−Z phone) → +Z virtual (behind)');
+  assert(z === -0.4, 'toward window (−Z cam) → −Z virtual');
 }
 
-// Up
 {
-  const [x, y, z] = mapSelfieLocalDelta(0, 0.3, 0);
-  assert(y === 0.3 && x === 0 && z === 0, 'up stays +Y');
+  const [x, y, z] = mapSelfieLocalDelta(0.3, 0, 0);
+  assert(x === 0 && y === -0.3 && z === 0, 'phone-up (+X cam) → −Y virtual');
 }
 
-// User's right: phone moves −X in front-cam frame → virtual +X
 {
-  const [x, y, z] = mapSelfieLocalDelta(-0.2, 0, 0);
-  assert(x === 0.2, 'user-right (−X phone) → +X virtual');
+  const [x, y, z] = mapSelfieLocalDelta(0, 0.2, 0);
+  assert(x === 0.2 && y === 0 && z === 0, 'phone-right (+Y cam) → +X virtual');
 }
 
-// Identity relative quat after selfie map should be finite unit-ish
 {
   const q = mapSelfieRelativeQuat(0, 0, 0, 1);
-  const n = Math.hypot(q[0], q[1], q[2], q[3]);
-  assert(Math.abs(n - 1) < 1e-9, 'identity relative maps to unit quat');
+  assert(
+    approx(q[0], 0) && approx(q[1], 0) && approx(q[2], 0) && approx(q[3], 1),
+    'identity relative → identity',
+  );
+}
+
+{
+  const s = 0.1;
+  const q = mapSelfieRelativeQuat(s, 0, 0, 1);
+  assert(approx(q[0], 0) && approx(q[1], s), 'cam pitch → virtual yaw');
+}
+
+{
+  const s = 0.1;
+  const q = mapSelfieRelativeQuat(0, s, 0, 1);
+  assert(approx(q[0], s) && approx(q[1], 0), 'cam yaw → virtual pitch');
 }
 
 if (failed) {

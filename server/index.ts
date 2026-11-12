@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { attachSignaling, createPairCode } from './signaling';
 import { listIpv4Adapters } from './network';
+import { createRoomBackgroundStore } from './roomBackground';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -11,6 +12,7 @@ const PORT = Number(process.env.PORT || 8787);
 const PAIR_CODE = (process.env.PAIR_CODE || createPairCode()).trim();
 const dist = path.join(root, 'dist');
 const startedAt = Date.now();
+const roomBg = createRoomBackgroundStore(root);
 
 const MIME: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -65,10 +67,12 @@ function main() {
 
   let signaling: ReturnType<typeof attachSignaling> | null = null;
 
-  const server = http.createServer((req, res) => {
+  const server = http.createServer(async (req, res) => {
     try {
       const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
       const pathname = decodeURIComponent(url.pathname);
+
+      if (await roomBg.handle(req, res, pathname)) return;
 
       if (pathname === '/api/health') {
         json(res, { ok: true, service: 'phonescene-poc', mode: 'production', phase: 'poc' });
@@ -105,6 +109,7 @@ function main() {
           uptimeMs: Date.now() - startedAt,
           signaling: snap,
           recommendedAddress: adapters.find((a) => a.recommended)?.address || null,
+          room: roomBg.readMeta(),
           links: {
             companion: `http://127.0.0.1:${PORT}/companion/`,
             desktop: `http://127.0.0.1:${PORT}/desktop/`,

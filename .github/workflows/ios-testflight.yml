@@ -94,8 +94,8 @@ jobs:
           PY
           xcodegen generate
           # XcodeGen can rewrite Info.plist; force shipping versions + camera key.
-          /usr/libexec/PlistBuddy -c 'Set :CFBundleVersion 4' PhoneSceneIOS/Info.plist
-          /usr/libexec/PlistBuddy -c 'Set :CFBundleShortVersionString 1.0.2' PhoneSceneIOS/Info.plist
+          /usr/libexec/PlistBuddy -c 'Set :CFBundleVersion 5' PhoneSceneIOS/Info.plist
+          /usr/libexec/PlistBuddy -c 'Set :CFBundleShortVersionString 1.0.3' PhoneSceneIOS/Info.plist
           /usr/libexec/PlistBuddy -c 'Print :NSCameraUsageDescription' PhoneSceneIOS/Info.plist >/dev/null
           /usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' PhoneSceneIOS/Info.plist
           plutil -p PhoneSceneIOS/Info.plist | head -40
@@ -121,15 +121,15 @@ jobs:
             PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
             GENERATE_INFOPLIST_FILE=NO \
             INFOPLIST_FILE=PhoneSceneIOS/Info.plist \
-            CURRENT_PROJECT_VERSION=4 \
-            MARKETING_VERSION=1.0.2 \
+            CURRENT_PROJECT_VERSION=5 \
+            MARKETING_VERSION=1.0.3 \
             archive
           APP_PLIST=build/PhoneSceneIOS.xcarchive/Products/Applications/Mervelere.app/Info.plist
           /usr/libexec/PlistBuddy -c 'Print :NSCameraUsageDescription' "$APP_PLIST"
           VER=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP_PLIST")
           echo "Archived CFBundleVersion=$VER"
-          if [ "$VER" != "4" ]; then
-            echo "Refusing to export: CFBundleVersion must be 4, got '$VER'"
+          if [ "$VER" != "5" ]; then
+            echo "Refusing to export: CFBundleVersion must be 5, got '$VER'"
             plutil -p "$APP_PLIST"
             exit 1
           fi
@@ -153,8 +153,8 @@ jobs:
           /usr/libexec/PlistBuddy -c 'Print :NSCameraUsageDescription' "$IPA_PLIST"
           IPA_VER=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$IPA_PLIST")
           echo "IPA CFBundleVersion=$IPA_VER"
-          if [ "$IPA_VER" != "4" ]; then
-            echo "Refusing upload: IPA CFBundleVersion must be 4, got '$IPA_VER'"
+          if [ "$IPA_VER" != "5" ]; then
+            echo "Refusing upload: IPA CFBundleVersion must be 5, got '$IPA_VER'"
             exit 1
           fi
           echo "IPA Info.plist camera + version OK"

@@ -43,7 +43,21 @@ Rules:
 - `mode:"6dof"` requires real camera translation from ARKit `frame.camera.transform` (not face anchor).
 - `mode:"3dof"` may omit `px/py/pz`; rotation quaternion and/or euler fields.
 - `t` is sender monotonic time in **milliseconds** (ARFrame.timestamp×1000). Do not assume PC wall clock equals phone wall clock.
-- Windows maps ARKit → Three with position `(x,y,-z)` and quaternion `(x,y,-z,w)` relative to recenter baseline.
+- Windows maps portrait selfie local deltas `(y,-x,z)` and relative quat `(qy,qx,-qz,qw)` on top of room rest pose after recenter.
+
+## Room background (V1 — 2D photo)
+
+HTTP on same server (LAN):
+
+| Method | Path | Body |
+| --- | --- | --- |
+| `POST` | `/api/room/background` | raw `image/*` bytes; header `X-Room-Name` |
+| `GET` | `/api/room/background` | image bytes |
+| `DELETE` | `/api/room/background` | clear |
+| `GET` | `/api/room/status` | `{ hasBackground, name, updatedAt, bytes }` |
+
+iOS: selected photo room → `AppModel.uploadRoomPhoto`.  
+Receiver polls status and draws photo BG under person matte.
 
 ## Compatibility
 

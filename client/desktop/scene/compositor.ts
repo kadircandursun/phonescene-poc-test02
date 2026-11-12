@@ -1,5 +1,4 @@
-import type { QualityProfile } from './segmenter';
-import { PersonSegmenter } from './segmenter';
+import { MattingEngine, type QualityProfile } from './matting';
 import { VirtualRoom, type SceneId } from './room';
 
 export type PreviewMode = 'final' | 'raw' | 'scene';
@@ -35,7 +34,8 @@ export type CompositorDiagnostics = {
  */
 export class SceneCompositor {
   readonly room: VirtualRoom;
-  readonly segmenter = new PersonSegmenter();
+  /** Windows matting engine (MODNet/ONNX primary; MediaPipe fallback). */
+  readonly segmenter = new MattingEngine();
 
   private readonly video: HTMLVideoElement;
   private readonly output: HTMLCanvasElement;
@@ -49,13 +49,19 @@ export class SceneCompositor {
   private readonly featherCanvas = document.createElement('canvas');
   private readonly featherCtx = this.featherCanvas.getContext('2d')!;
 
-  enabled3d = true;
+  enabled3d = false;
   enabledSeg = true;
+  /** V1 product: user room photo behind person. */
+  usePhotoBackground = true;
   previewMode: PreviewMode = 'final';
   trackingEnabled = true;
   outputProfile: OutputProfile = 'portrait';
   /** cover = crop center into 16:9; contain = letterbox (no crop). */
   landscapeFit: 'cover' | 'contain' = 'cover';
+  private bgImage: HTMLImageElement | null = null;
+  private bgName = '';
+  private bgParallaxX = 0;
+  private bgParallaxY = 0;
 
   private running = false;
   private raf = 0;
@@ -111,6 +117,54 @@ export class SceneCompositor {
     this.segmenter.setProfile(profile);
   }
 
+  /** iOS Vision soft-alpha track (second WebRTC video). */
+  attachPhoneAlphaTrack(track: MediaStreamTrack) {
+    this.segmenter.attachPhoneAlphaTrack(track);
+  }
+
+  get backgroundName() {
+    return this.bgName;
+  }
+
+  hasPhotoBackground() {
+    return !!(this.bgImage && this.bgImage.complete && this.bgImage.naturalWidth > 0);
+  }
+
+  async setPhotoBackgroundFromUrl(url: string, name = ''): Promise<boolean> {
+    return await new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        this.bgImage = img;
+        this.bgName = name;
+        this.usePhotoBackground = true;
+        this.enabled3d = false;
+        resolve(true);
+      };
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
+
+  clearPhotoBackground() {
+    this.bgImage = null;
+    this.bgName = '';
+  }
+
+  /** Subtle pan from phone yaw/pitch (no full 3D room). */
+  setBackgroundParallax(yawNorm: number, pitchNorm: number) {
+    this.bgParallaxX = Math.max(-1, Math.min(1, yawNorm)) * 0.04;
+    this.bgParallaxY = Math.max(-1, Math.min(1, pitchNorm)) * 0.03;
+  }
+
+  /** Background Matting (fixed camera only — not PhoneScene default). */
+  captureEmptyBackground() {
+    return this.segmenter.captureEmptyBackground(this.video);
+  }
+
+  isBackgroundReady() {
+    return this.segmenter.backgroundReady();
+  }
+
   setTracking(enabled: boolean) {
     this.trackingEnabled = enabled;
     this.room.orientation.trackingEnabled = enabled;
@@ -138,6 +192,9 @@ export class SceneCompositor {
 
   pushSensors(alpha: number | null, beta: number | null, gamma: number | null) {
     this.room.orientation.updateFromSensors(alpha, beta, gamma);
+    if (gamma != null || beta != null) {
+      this.setBackgroundParallax((gamma ?? 0) / 50, ((beta ?? 90) - 90) / 50);
+    }
     this.bumpPoseHz();
   }
 
@@ -206,7 +263,7 @@ export class SceneCompositor {
       }
       if (this.video.currentTime === this.lastVideoTime) this.droppedLate += 1;
       this.lastVideoTime = this.video.currentTime;
-      if (this.enabledSeg) this.segmenter.maybeSegment(this.video);
+      // Matte only from RAF loop — avoid double-scheduling with MODNet.
       this.rvfcHandle = v.requestVideoFrameCallback!(onFrame);
     };
     this.rvfcHandle = v.requestVideoFrameCallback(onFrame);
@@ -241,7 +298,7 @@ export class SceneCompositor {
       poseHz: this.poseHz,
       segInferMs: Math.round(seg.lastInferMs),
       segFps: seg.inferFps,
-      segStatus: seg.status,
+      segStatus: `${seg.backend}:${seg.status}`,
       width: this.outW,
       height: this.outH,
       workWidth: this.workW,
@@ -307,12 +364,14 @@ export class SceneCompositor {
       return;
     }
 
-    if (this.enabled3d) this.room.render();
+    if (this.enabled3d && !this.usePhotoBackground) this.room.render();
 
     this.ctx.fillStyle = '#0b1012';
     this.ctx.fillRect(0, 0, w, h);
 
-    if (this.enabled3d) {
+    if (this.usePhotoBackground && this.hasPhotoBackground()) {
+      this.drawPhotoBackground(w, h);
+    } else if (this.enabled3d) {
       this.ctx.drawImage(this.room.renderer.domElement, 0, 0, w, h);
     }
 
@@ -337,7 +396,21 @@ export class SceneCompositor {
       this.ctx.fillText('Waiting for phone…', w / 2, h / 2);
     }
 
-    this.finishPresent(hasVideo || this.enabled3d);
+    this.finishPresent(hasVideo || this.enabled3d || this.hasPhotoBackground());
+  }
+
+  private drawPhotoBackground(w: number, h: number) {
+    const img = this.bgImage!;
+    const iw = img.naturalWidth;
+    const ih = img.naturalHeight;
+    const scale = Math.max(w / iw, h / ih) * 1.08; // slight overscan for parallax
+    const dw = iw * scale;
+    const dh = ih * scale;
+    const ox = (w - dw) / 2 + this.bgParallaxX * w;
+    const oy = (h - dh) / 2 + this.bgParallaxY * h;
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
+    this.ctx.drawImage(img, ox, oy, dw, dh);
   }
 
   private finishPresent(good: boolean) {
@@ -384,38 +457,59 @@ export class SceneCompositor {
   }
 
   private buildFeatheredMatte(mask: HTMLCanvasElement, w: number, h: number) {
-    const { featherPx, growPx } = this.segmenter.getEdgeParams();
+    const { featherPx, growPx, softAlpha } = this.segmenter.getEdgeParams();
     const scale = w / 720;
-    const feather = Math.max(1.2, featherPx * scale);
-    const grow = Math.max(1, growPx * scale);
+    const feather = Math.max(softAlpha ? 0.4 : 1.2, featherPx * scale);
+    const grow = softAlpha ? 0 : Math.max(1, growPx * scale);
 
     const m = this.matteCtx;
     m.clearRect(0, 0, w, h);
     m.imageSmoothingEnabled = true;
     m.imageSmoothingQuality = 'high';
-    const offsets: Array<[number, number]> = [
-      [0, 0],
-      [grow, 0],
-      [-grow, 0],
-      [0, grow],
-      [0, -grow],
-      [grow * 0.7, grow * 0.7],
-      [-grow * 0.7, grow * 0.7],
-      [grow * 0.7, -grow * 0.7],
-      [-grow * 0.7, -grow * 0.7],
-    ];
-    for (const [dx, dy] of offsets) m.drawImage(mask, dx, dy, w, h);
+
+    if (softAlpha) {
+      // Continuous alpha — upsample softly, no binary dilate (avoids white fringe).
+      m.drawImage(mask, 0, 0, w, h);
+    } else {
+      const offsets: Array<[number, number]> = [
+        [0, 0],
+        [grow, 0],
+        [-grow, 0],
+        [0, grow],
+        [0, -grow],
+        [grow * 0.7, grow * 0.7],
+        [-grow * 0.7, grow * 0.7],
+        [grow * 0.7, -grow * 0.7],
+        [-grow * 0.7, -grow * 0.7],
+      ];
+      for (const [dx, dy] of offsets) m.drawImage(mask, dx, dy, w, h);
+    }
 
     const f = this.featherCtx;
     f.clearRect(0, 0, w, h);
     f.imageSmoothingEnabled = true;
     f.imageSmoothingQuality = 'high';
-    f.filter = `blur(${feather.toFixed(2)}px)`;
-    f.drawImage(this.matteCanvas, 0, 0);
-    f.filter = 'none';
+    if (feather > 0.05) {
+      f.filter = `blur(${feather.toFixed(2)}px)`;
+      f.drawImage(this.matteCanvas, 0, 0);
+      f.filter = 'none';
+    } else {
+      f.drawImage(this.matteCanvas, 0, 0);
+    }
   }
 
   private drawPersonMasked(w: number, h: number) {
+    const person = this.segmenter.getPersonCanvas();
+    // BGM: model fgr already despilled — draw directly (no video×soft-mask halo).
+    if (person) {
+      this.personCtx.clearRect(0, 0, w, h);
+      this.personCtx.imageSmoothingEnabled = true;
+      this.personCtx.imageSmoothingQuality = 'high';
+      this.personCtx.drawImage(person, 0, 0, w, h);
+      this.ctx.drawImage(this.personCanvas, 0, 0, w, h);
+      return;
+    }
+
     const mask = this.segmenter.getMaskCanvas();
     if (!mask) return;
     this.buildFeatheredMatte(mask, w, h);

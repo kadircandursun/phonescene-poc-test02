@@ -1,12 +1,12 @@
 # PhoneScene PoC
 
-Windows Companion + WebRTC Receiver + MediaPipe/Three.js composite + OBS Broadcast path.
+iPhone (ARKit) → LAN WebRTC → Windows MODNet/ONNX matting → soft alpha → Three.js room → OBS Virtual Cam.
 
 ## Quick start
 
 ```powershell
 npm install
-npm run companion   # build (if needed) + server + opens Companion & Receiver
+npm run app         # RVM matting (DirectML/CPU) + server + Companion & Receiver
 # optional phone HTTPS:
 npm run tunnel
 ```

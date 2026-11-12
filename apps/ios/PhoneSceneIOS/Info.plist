@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.2</string>
+	<string>1.0.3</string>
 	<key>CFBundleVersion</key>
-	<string>4</string>
+	<string>5</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchScreen</key>
@@ -34,7 +34,9 @@
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>PhoneScene ön kamerayı sanal mekân PoC için kullanır.</string>
+	<string>Mervelere oda fotoğrafı çekmek ve canlı yerleşim için kamerayı kullanır.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Mervelere kayıtlı oda fotoğraflarını mekân kütüphanesine eklemek için galeriye erişir.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>PhoneScene cihaz yönünü 3DoF yedek takip için kullanır.</string>
 	<key>NSLocalNetworkUsageDescription</key>

@@ -6,6 +6,49 @@
 **Why:** Working PoC; risk of regression.  
 **Alt:** Full native Windows engine now — rejected for PoC scope.
 
+## 2026-11-09 — Windows Matting Engine (MODNet/ONNX; RTX hook)
+
+**Decision:** Architecture keeps a Windows **matting** stage. **PoC runtime default = MediaPipe** after browser MODNet produced ghost mattes + lag.  
+**Why:** Visibility for ongoing native phone tests.
+
+## 2026-11-10 — Universal native matting (no RTX lock-in)
+
+**Decision (interim engine):** Native RVM + DirectML→CPU scaffolding exists; **not** the product cutout path by itself.
+
+## 2026-11-10 — Product-grade cutout (research lock)
+
+**Decision:** Do **not** chase “çok iyi” by patching browser MediaPipe / WASM MODNet / downscaled WS-RVM hybrids. Those are PoC demos only.  
+**Product cutout = one of these (priority order):**
+
+1. **Background Matting (BGMv2-style)** on Windows native app: one empty-background reference frame + realtime alpha (CVPR’21 Lin et al.; Zoom-plugin proven). Best open quality without RTX lock-in; works Intel/AMD/NVIDIA via DirectML/CPU.  
+2. **iPhone Vision person segmentation** (`VNGeneratePersonSegmentationRequest`, balanced/accurate) → send soft alpha with video. Neural Engine; person-only (chair less often); Windows only composites.  
+3. **Optional chroma / plain backdrop** for broadcast-tier PoC filming.  
+4. NVIDIA Maxine = optional accelerator only, never required.
+
+**Why current looks bad:** RVM alone treats chair as subject; browser/WS downscale + double-model mash destroys opacity/edges. Zoom/Meet product stacks run **local native** pipeline: capture → (optional bg ref) → matting → GPU composite → encode — not a tab + localhost frame shuttle.  
+**Not chosen:** More feather/threshold hacks on the PoC Receiver.
+
+## 2026-11-10 — Ship BGMv2 as PoC primary matte
+
+**Decision (superseded same day):** BGM empty-bg briefly wired; **rejected for PhoneScene** because user/phone move — plate alignment breaks.
+
+## 2026-11-10 — No empty-bg dependency (moving capture)
+
+**Decision:** Cutout must work while the user moves. **Primary = iPhone Vision person segmentation** (`VNGeneratePersonSegmentationRequest`) → second WebRTC video track. **Windows fallback = RVM + MediaPipe person gate** (no plate). BGM empty-bg is fixed-camera only, not product default.  
+**Why:** Handheld ARKit + walking user invalidates empty-room reference.
+
+## 2026-11-12 — Product = room library + cut + place (not matte lab)
+
+**Decision:** Core product is (1) user-scanned rooms stored in-app, (2) person cut from current place, (3) live placement into saved room with synced motion. Target demo level **L1** (RoomPlan USDZ + Vision + existing PC composite). Freeze multi-backend matte experiments; photoreal Gaussian splat is v2.  
+**Why:** Team focus drifted into cutout polish before the actual value loop (own room → appear there) existed. Procedural loft/studio is a placeholder, not the product.  
+**Doc:** `docs/PRODUCT_VISION_PLAN.md`
+
+## 2026-11-12 — No full 3D room required (V1)
+
+**Decision (supersedes RoomPlan-as-primary):** V1 mekân = **2D oda fotoğrafı** (opsiyonel 360). Kişi Vision ile kesilir, fotoğrafın üzerine konur. Kullanıcı az hareket eder; dönüşte düzgün dursun yeter (sabit BG veya hafif parallax / 360 yaw-pitch). **RoomPlan / mesh 3D zorunlu değil** — gelişmiş / sonra.  
+**Why:** “Oradaymış gibi” görüntülü konuşma için Zoom-tarzı virtual background yeterli; full 3D parallax ürünü şişiriyor.  
+**Doc:** `docs/PRODUCT_VISION_PLAN.md`
+
 ## 2026-11-09 — Windows Companion = web panel + Node launcher (Tauri deferred)
 
 **Decision:** Ship `/companion/` + `npm run companion` first.  
@@ -37,8 +80,9 @@
 
 ## 2026-11-09 — Selfie 6DoF axis contract
 
-**Decision:** Remap phone-local deltas as `(-x, y, -z)` + 180° yaw/mirror on relative quat; rest camera looks into room with window behind.  
-**Why:** Front camera looks at user (toward rear window); virtual cam must look opposite into room. Hardware: forward/back felt inverted until this remap.  
+**Decision:** Portrait face-tracking: quat `(qy, qx, −qz, qw)`; position `(y, −x, z)`. Rest camera looks into room with window behind.  
+**Why:** ARKit portrait axes rolled ~90° vs phone body. Rotation and translation signs tuned separately from device (turns OK first; walk X/Z then flipped).  
+**Also fixed:** Absolute 180° yaw left-multiply on relative quat (identity→(0,1,0,0)).  
 **Start pose:** upright selfie, back to window, then Recenter after tracking normal.
 
 ## 2026-11-09 — No local Mac: native iOS via rented Cloud Mac (not Expo-only)

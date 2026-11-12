@@ -23,7 +23,10 @@
 
 ## P4 — PoC quality (non-blocking)
 
-- Segmentation edges not broadcast-invisible
+- Empty-bg BGM abandoned for moving PhoneScene (plate breaks when phone/user moves)
+- Vision alpha needs iOS rebuild on Mac/Xcode — until then RVM+gate (chair risk)
+- RVM alone can keep gaming chair; person gate helps but imperfect
+- NVIDIA RTX matting SDK not linked (stub only)
 - OBS Window Capture can fail if browser minimized
 
 ## P5 — Smoke flake

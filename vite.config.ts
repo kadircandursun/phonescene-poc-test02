@@ -14,6 +14,10 @@ export default defineConfig({
         desktop: path.resolve('client/desktop/index.html'),
       },
     },
+    chunkSizeWarningLimit: 1500,
+  },
+  optimizeDeps: {
+    exclude: ['onnxruntime-web'],
   },
   server: {
     middlewareMode: true,

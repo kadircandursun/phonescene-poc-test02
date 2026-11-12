@@ -14,7 +14,7 @@
 ## TEST 03 — 3D Composite
 
 - Result: **PASS (PoC)**
-- Notes: MediaPipe quality not product-grade
+- Notes: MediaPipe quality not product-grade; **MODNet/ONNX soft-alpha path added 2026-11-09** (device re-verify pending)
 
 ## TEST 04 — Broadcast / OBS
 
@@ -36,7 +36,7 @@
 ## Windows 6DoF plumbing
 
 - Code present in Receiver (`SixDofTracker`)
-- Hardware parallax: **NOT TESTED** (needs native pose sender)
+- Hardware parallax / axes: **PASS** (user 2026-11-09; turns + walk after portrait map `(y,-x,z)` / quat `(qy,qx,-qz,qw)`)
 
 ## iOS ARKit (sideload path)
 
@@ -64,5 +64,5 @@
 
 - Implementation (build 4+): stasel WebRTC SPM + ARFrame video + `pose` on `sensors` DC
 - CI upload build 4 (run `42637222861`): **PASS**
-- Device LAN WebRTC (video + pose → Companion): **NOT TESTED** (await user)
+- Device LAN WebRTC (video + pose → Receiver): **PASS** (user 2026-11-09; 6DoF axes OK)
 

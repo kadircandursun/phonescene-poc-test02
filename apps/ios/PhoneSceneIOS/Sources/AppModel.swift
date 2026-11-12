@@ -27,9 +27,11 @@ final class AppModel: ObservableObject {
     @Published var faceSupported = false
     @Published var worldTrackingSupported = false
     @Published var connecting = false
+    @Published var roomUploadStatus: String = ""
 
     private let ar = ARSessionManager()
     private let signaling = SignalingClient()
+    private let personMatte = PersonMatteEngine()
     private var peer: WebRTCPeer?
 
     init() {
@@ -128,6 +130,57 @@ final class AppModel: ObservableObject {
         statusText = "Companion bağlantısı kesildi"
     }
 
+    /// Upload selected room photo to Windows Receiver (`POST /api/room/background`).
+    func uploadRoomPhoto(_ room: SavedRoom) async {
+        guard room.kind == .photo else {
+            roomUploadStatus = "Sadece fotoğraf odaları PC’ye gider (V1)."
+            return
+        }
+        let host = serverHost.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let port = Int(serverPort), !host.isEmpty else {
+            roomUploadStatus = "Host / port eksik"
+            return
+        }
+        guard let data = try? Data(contentsOf: room.assetURL), !data.isEmpty else {
+            roomUploadStatus = "Fotoğraf okunamadı"
+            return
+        }
+
+        roomUploadStatus = "Oda PC’ye gönderiliyor…"
+        var components = URLComponents()
+        components.scheme = "http"
+        components.host = host
+        components.port = port
+        components.path = "/api/room/background"
+        guard let url = components.url else {
+            roomUploadStatus = "URL hatalı"
+            return
+        }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
+        req.setValue(
+            room.name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? room.name,
+            forHTTPHeaderField: "X-Room-Name"
+        )
+        req.httpBody = data
+        req.timeoutInterval = 60
+
+        do {
+            let (_, response) = try await URLSession.shared.data(for: req)
+            let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+            if (200 ... 299).contains(code) {
+                roomUploadStatus = "Oda gönderildi — Receiver yenilesin"
+                statusText = "Oda fotoğrafı PC’de"
+            } else {
+                roomUploadStatus = "Upload HTTP \(code)"
+            }
+        } catch {
+            roomUploadStatus = "Upload hata: \(error.localizedDescription)"
+        }
+    }
+
     private func handlePose(_ sample: ARSessionManager.PoseSample) {
         poseLine = String(
             format: "t=%.3f  p=(%.3f, %.3f, %.3f)  %@",
@@ -140,6 +193,14 @@ final class AppModel: ObservableObject {
 
         if let buffer = sample.pixelBuffer {
             peer?.pushVideoPixelBuffer(buffer, timestamp: sample.timestamp)
+            // Vision person alpha — no empty-bg plate; OK while moving.
+            let ts = sample.timestamp
+            personMatte.generateMatte(from: buffer) { [weak self] alphaBGRA in
+                guard let alphaBGRA else { return }
+                Task { @MainActor in
+                    self?.peer?.pushAlphaPixelBuffer(alphaBGRA, timestamp: ts)
+                }
+            }
         }
 
         guard let peer, peer.isDataOpen else { return }

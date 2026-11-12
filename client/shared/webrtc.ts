@@ -8,7 +8,7 @@ const ICE_SERVERS: RTCIceServer[] = [
 export type PeerHandlers = {
   onConnectionState?: (state: RTCPeerConnectionState) => void;
   onIceConnectionState?: (state: RTCIceConnectionState) => void;
-  onTrack?: (stream: MediaStream) => void;
+  onTrack?: (info: { track: MediaStreamTrack; streams: readonly MediaStream[] }) => void;
   onDataMessage?: (data: string) => void;
   onDataOpen?: () => void;
   onDataClose?: () => void;
@@ -36,8 +36,7 @@ export class PhoneScenePeer {
       this.handlers.onIceConnectionState?.(this.pc.iceConnectionState);
     };
     this.pc.ontrack = (event) => {
-      const stream = event.streams[0] || new MediaStream([event.track]);
-      this.handlers.onTrack?.(stream);
+      this.handlers.onTrack?.({ track: event.track, streams: event.streams });
     };
     this.pc.ondatachannel = (event) => {
       this.bindDataChannel(event.channel);

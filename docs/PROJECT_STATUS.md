@@ -1,25 +1,25 @@
 # PROJECT_STATUS
 
-**Updated:** 2026-11-09  
-**Current phase:** TestFlight build **4** uploaded · native WebRTC LAN test · **Mervelere**
+**Updated:** 2026-11-12  
+**Current phase:** L1 complete in code — **oda foto + kes + koy** (PC composite)  
+**Vizyon:** [`PRODUCT_VISION_PLAN.md`](./PRODUCT_VISION_PLAN.md)
 
-## Completed
+## Done (this pass)
 
-- ARKit 6DoF device PASS (build 3)
-- Native WebRTC (AR video + pose DC) CI PASS  
-  https://github.com/kadircandursun/phonescene-poc-test02/actions/runs/42637222861
+- Server `POST/GET/DELETE /api/room/background` + `/api/room/status`
+- Receiver: foto BG default (3D off), local upload, poll refresh, hafif parallax
+- iOS: oda foto kütüphane + **Seçili odayı PC’ye gönder**
+- Vision / RoomPlan kodu repoda (cihaz build ayrı)
 
-## In progress / blocked
+## Needs device / TestFlight
 
-- Device LAN WebRTC (video + pose → Companion) — **NOT TESTED**
+- Build **5+** IPA (UI + foto oda + Vision + upload)
+- LiDAR şart değil (foto yolu)
 
-## Next action (kullanıcı)
+## Run (Windows)
 
-1. TestFlight → **1.0.2 (4)** güncelle  
-2. PC aynı Wi‑Fi: `npm run companion` → Receiver → pair kodu kopyala  
-3. iPhone: Companion’daki LAN IP + `8787` + kod → Start AR → **Connect PC**  
-4. Receiver’da video + oda hareketi / poseHz bildir  
-
-## User actions required
-
-- Build 4 kur + LAN WebRTC sonucu
+```powershell
+npm run app
+# Receiver: http://127.0.0.1:8787/desktop/
+# Oda:     POST /api/room/background  (image/* + X-Room-Name)
+```
