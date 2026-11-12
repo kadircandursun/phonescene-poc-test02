@@ -66,3 +66,10 @@
 - CI upload build 4 (run `42637222861`): **PASS**
 - Device LAN WebRTC (video + pose → Receiver): **PASS** (user 2026-11-09; 6DoF axes OK)
 
+## L1 photo-room + Vision matte (build 6)
+
+- Code: room photo library + `/api/room/background` + Vision alpha track + RVM∩gate fallback
+- RoomPlan removed from V1 (photo-only) to unblock archive
+- CI TestFlight run `43237695715` (build **6** / `1.0.3`): **PASS** (archive + IPA + ASC)
+- Device E2E (foto → PC → Receiver → cut → OBS): **NOT TESTED** (await user install)
+

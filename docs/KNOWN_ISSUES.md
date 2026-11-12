@@ -24,8 +24,9 @@
 ## P4 — PoC quality (non-blocking)
 
 - Empty-bg BGM abandoned for moving PhoneScene (plate breaks when phone/user moves)
-- Vision alpha needs iOS rebuild on Mac/Xcode — until then RVM+gate (chair risk)
+- Vision soft-alpha in TestFlight build 6 — device E2E pending; until then RVM+gate (chair risk)
 - RVM alone can keep gaming chair; person gate helps but imperfect
+- RoomPlan deferred post-V1 (NSCoding/RoomCaptureViewDelegate archive issues)
 - NVIDIA RTX matting SDK not linked (stub only)
 - OBS Window Capture can fail if browser minimized
 
