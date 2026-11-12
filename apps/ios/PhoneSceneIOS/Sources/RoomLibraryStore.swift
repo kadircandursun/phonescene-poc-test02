@@ -19,7 +19,7 @@ struct SavedRoom: Identifiable, Codable, Equatable {
     var jsonFileName: String?
 
     var folderURL: URL {
-        RoomLibraryStore.roomsRoot.appendingPathComponent(id, isDirectory: true)
+        RoomLibraryStore.roomsDirectory().appendingPathComponent(id, isDirectory: true)
     }
 
     var assetURL: URL {
@@ -29,20 +29,20 @@ struct SavedRoom: Identifiable, Codable, Equatable {
 
 @MainActor
 final class RoomLibraryStore: ObservableObject {
-    static let roomsRoot: URL = {
+    nonisolated static func roomsDirectory() -> URL {
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         return docs.appendingPathComponent("Rooms", isDirectory: true)
-    }()
+    }
 
     @Published private(set) var rooms: [SavedRoom] = []
     @Published var selectedRoomId: String? {
         didSet { UserDefaults.standard.set(selectedRoomId, forKey: "selectedRoomId") }
     }
 
-    private let indexURL = RoomLibraryStore.roomsRoot.appendingPathComponent("index.json")
+    private var indexURL: URL { Self.roomsDirectory().appendingPathComponent("index.json") }
 
     init() {
-        try? FileManager.default.createDirectory(at: Self.roomsRoot, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: Self.roomsDirectory(), withIntermediateDirectories: true)
         selectedRoomId = UserDefaults.standard.string(forKey: "selectedRoomId")
         reload()
     }
@@ -67,7 +67,7 @@ final class RoomLibraryStore: ObservableObject {
     @discardableResult
     func savePhoto(name: String, image: UIImage, maxSide: CGFloat = 1920) throws -> SavedRoom {
         let id = UUID().uuidString
-        let folder = Self.roomsRoot.appendingPathComponent(id, isDirectory: true)
+        let folder = Self.roomsDirectory().appendingPathComponent(id, isDirectory: true)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
 
         let resized = Self.resize(image, maxSide: maxSide)
@@ -106,7 +106,7 @@ final class RoomLibraryStore: ObservableObject {
         objectCount: Int
     ) throws -> SavedRoom {
         let id = UUID().uuidString
-        let folder = Self.roomsRoot.appendingPathComponent(id, isDirectory: true)
+        let folder = Self.roomsDirectory().appendingPathComponent(id, isDirectory: true)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
 
         let fileName = "room.usdz"
@@ -145,9 +145,9 @@ final class RoomLibraryStore: ObservableObject {
     }
 
     func delete(_ id: String) throws {
-        let folder = Self.roomsRoot.appendingPathComponent(id, isDirectory: true)
+        let folder = Self.roomsDirectory().appendingPathComponent(id, isDirectory: true)
         try? FileManager.default.removeItem(at: folder)
-        var next = rooms.filter { $0.id != id }
+        let next = rooms.filter { $0.id != id }
         try writeIndex(next)
         rooms = next
         if selectedRoomId == id {

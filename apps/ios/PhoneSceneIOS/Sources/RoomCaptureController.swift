@@ -6,8 +6,9 @@ import RoomPlan
 #endif
 
 /// Bridges RoomPlan `RoomCaptureView` into SwiftUI and exports USDZ + JSON.
+/// Optional advanced path — V1 product uses photo rooms.
 @MainActor
-final class RoomCaptureController: NSObject, ObservableObject {
+final class RoomCaptureController: ObservableObject {
     @Published var isScanning = false
     @Published var isProcessing = false
     @Published var statusMessage = "Odayı yavaşça tara — duvarlar ve mobilyalar çıksın."
@@ -18,6 +19,7 @@ final class RoomCaptureController: NSObject, ObservableObject {
     let captureView = RoomCaptureView(frame: .zero)
     private var finalRoom: CapturedRoom?
     private let sessionConfig = RoomCaptureSession.Configuration()
+    private lazy var delegateProxy = RoomCaptureDelegateProxy(owner: self)
     #endif
 
     static var isDeviceSupported: Bool {
@@ -29,10 +31,9 @@ final class RoomCaptureController: NSObject, ObservableObject {
         return false
     }
 
-    override init() {
-        super.init()
+    init() {
         #if canImport(RoomPlan)
-        captureView.delegate = self
+        captureView.delegate = delegateProxy
         #endif
     }
 
@@ -60,7 +61,6 @@ final class RoomCaptureController: NSObject, ObservableObject {
         #endif
     }
 
-    /// Export captured room into library store.
     func exportToLibrary(name: String, store: RoomLibraryStore) throws -> SavedRoom {
         #if canImport(RoomPlan)
         guard let room = finalRoom else {
@@ -89,29 +89,48 @@ final class RoomCaptureController: NSObject, ObservableObject {
         ])
         #endif
     }
+
+    #if canImport(RoomPlan)
+    fileprivate func handleProcessed(_ room: CapturedRoom?, error: Error?) {
+        isProcessing = false
+        if let error {
+            lastError = error.localizedDescription
+            statusMessage = "İşleme hatası"
+            canSave = false
+            return
+        }
+        guard let room else {
+            canSave = false
+            statusMessage = "Sonuç yok"
+            return
+        }
+        finalRoom = room
+        canSave = true
+        statusMessage = "Hazır — \(room.walls.count) duvar, \(room.objects.count) nesne. Kaydet."
+    }
+    #endif
 }
 
 #if canImport(RoomPlan)
-extension RoomCaptureController: RoomCaptureViewDelegate {
-    nonisolated func captureView(
+/// Separate NSObject proxy — RoomCaptureViewDelegate inherits NSObjectProtocol/NSCoding requirements.
+private final class RoomCaptureDelegateProxy: NSObject, RoomCaptureViewDelegate {
+    weak var owner: RoomCaptureController?
+
+    init(owner: RoomCaptureController) {
+        self.owner = owner
+        super.init()
+    }
+
+    func captureView(
         shouldPresent roomDataForProcessing: CapturedRoomData,
         error: Error?
     ) -> Bool {
         true
     }
 
-    nonisolated func captureView(didPresent processedResult: CapturedRoom, error: Error?) {
+    func captureView(didPresent processedResult: CapturedRoom, error: Error?) {
         Task { @MainActor in
-            self.isProcessing = false
-            if let error {
-                self.lastError = error.localizedDescription
-                self.statusMessage = "İşleme hatası"
-                self.canSave = false
-                return
-            }
-            self.finalRoom = processedResult
-            self.canSave = true
-            self.statusMessage = "Hazır — \(processedResult.walls.count) duvar, \(processedResult.objects.count) nesne. Kaydet."
+            self.owner?.handleProcessed(processedResult, error: error)
         }
     }
 }

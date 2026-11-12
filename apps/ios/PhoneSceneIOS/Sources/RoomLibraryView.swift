@@ -17,7 +17,7 @@ struct RoomLibraryView: View {
 
     var body: some View {
         List {
-            Section("Oda ekle") {
+            Section {
                 Button {
                     onWillCapture?()
                     showCamera = true
@@ -37,11 +37,13 @@ struct RoomLibraryView: View {
                         Label("3D tara (ileri, opsiyonel)", systemImage: "cube.transparent")
                     }
                 }
+            } header: {
+                Text("Oda ekle")
             } footer: {
                 Text("V1: oda fotoğrafı yeterli. 3D tarama şart değil.")
             }
 
-            Section("Kayıtlı odalar") {
+            Section {
                 if store.rooms.isEmpty {
                     Text("Henüz oda yok. Oturduğun yerin fotoğrafını ekle.")
                         .foregroundStyle(.secondary)
@@ -89,6 +91,8 @@ struct RoomLibraryView: View {
                         }
                     }
                 }
+            } header: {
+                Text("Kayıtlı odalar")
             }
 
             if let err = errorText {
@@ -181,8 +185,12 @@ struct CameraPicker: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
-        picker.sourceType = UIImagePickerController.isSourceTypeAvailable(.camera) ? .camera : .photoLibrary
-        picker.cameraCaptureMode = .photo
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            picker.sourceType = .camera
+            picker.cameraCaptureMode = .photo
+        } else {
+            picker.sourceType = .photoLibrary
+        }
         picker.delegate = context.coordinator
         return picker
     }
