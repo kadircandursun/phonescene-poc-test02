@@ -11,6 +11,14 @@
 - Cause: shipped IPA Info.plist lacked `NSCameraUsageDescription` (`GENERATE_INFOPLIST_FILE` not forced `NO`)
 - Fix: explicit Info.plist + CI PlistBuddy gate + AVCapture permission request
 
+## P1 — UI letterbox / “ekran kesik” (fixed in build 7)
+
+- Symptom: Form floats as a cut card on black; top/bottom (and side) bars; content clipped mid-row
+- Cause: shipped IPA **missing `UILaunchScreen`** — XcodeGen regenerated Info.plist from `project.yml` `info.properties` and stripped the key; `INFOPLIST_KEY_UILaunchScreen_Generation` is ignored when `GENERATE_INFOPLIST_FILE=NO`
+- Evidence: build 6 IPA Info.plist keys had no `UILaunchScreen` / no storyboard
+- Effect: iOS compatibility letterboxing (non-fullscreen window)
+- Fix: keep `UILaunchScreen: {}` in `project.yml` + CI refuse export/upload if missing
+
 ## P2 — Web mobile networking
 
 - Safari camera still needs HTTPS secure context (tunnel) for web sender

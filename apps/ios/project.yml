@@ -10,8 +10,8 @@ settings:
   SWIFT_VERSION: "5.0"
   TARGETED_DEVICE_FAMILY: "1"
   IPHONEOS_DEPLOYMENT_TARGET: "16.0"
-  CURRENT_PROJECT_VERSION: "6"
-  MARKETING_VERSION: "1.0.3"
+  CURRENT_PROJECT_VERSION: "7"
+  MARKETING_VERSION: "1.0.4"
 
 packages:
   WebRTC:
@@ -36,8 +36,8 @@ targets:
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.mervelere.app
       PRODUCT_NAME: Mervelere
-      CURRENT_PROJECT_VERSION: "6"
-      MARKETING_VERSION: "1.0.3"
+      CURRENT_PROJECT_VERSION: "7"
+      MARKETING_VERSION: "1.0.4"
       INFOPLIST_FILE: PhoneSceneIOS/Info.plist
       GENERATE_INFOPLIST_FILE: "NO"
       CODE_SIGN_STYLE: Manual
@@ -60,8 +60,11 @@ targets:
       path: PhoneSceneIOS/Info.plist
       properties:
         CFBundleDisplayName: Mervelere
-        CFBundleShortVersionString: "1.0.3"
-        CFBundleVersion: "6"
+        CFBundleShortVersionString: "1.0.4"
+        CFBundleVersion: "7"
+        # Critical: without UILaunchScreen, iOS letterboxes the app (black bars + clipped Form).
+        # XcodeGen regenerates Info.plist from these properties — must keep this key here.
+        UILaunchScreen: {}
         NSCameraUsageDescription: Mervelere oda fotoğrafı çekmek ve canlı yerleşim için kamerayı kullanır.
         NSPhotoLibraryUsageDescription: Mervelere kayıtlı oda fotoğraflarını mekân kütüphanesine eklemek için galeriye erişir.
         NSMotionUsageDescription: PhoneScene cihaz yönünü 3DoF yedek takip için kullanır.
